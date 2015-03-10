@@ -13,7 +13,7 @@ namespace DrawingApp
 {
     public partial class DrawingApp : Form
     {
-        Queue shapequeue = new Queue();
+        Queue<shape> shapequeue = new Queue<shape>();  
         shape outline = new shape("Outline Rectangle", Color.Black, 0, 0, 1, 1, false);
         string mode = "Create Rectangle";
         int move_x = 0;
@@ -84,8 +84,20 @@ namespace DrawingApp
                     {
                         if (current_shape.is_selected)
                         {
-                            current_shape.pos_x = initial_mouse_pos.X + (mouse_pos.X - current_shape.pos_x);
-                            current_shape.pos_y = initial_mouse_pos.Y + (mouse_pos.Y - current_shape.pos_y);
+                            current_shape.pos_x = mouse_pos.X - current_shape.size_x /2;
+                            current_shape.pos_y = mouse_pos.Y - current_shape.size_y /2;
+                            this.Refresh();
+                        }
+                    }
+                }
+                if (mode == "Resize")
+                {
+                    foreach (shape current_shape in shapequeue)
+                    {
+                        if (current_shape.is_selected)
+                        {
+                            current_shape.size_x = mouse_pos.X - current_shape.pos_x;
+                            current_shape.size_y = mouse_pos.Y - current_shape.pos_y;
                             this.Refresh();
                         }
                     }
@@ -140,27 +152,13 @@ namespace DrawingApp
                 }
                 this.Refresh();
                 }
-            }
+            }   
         }
 
         private void DrawingApp_MouseDown(object sender, MouseEventArgs e)
         {
             initial_mouse_pos = this.PointToClient(Cursor.Position);
-
-            if (mode == "Move")
-            {
-                foreach (shape current_shape in shapequeue)
-                {
-                    if (new Rectangle(current_shape.pos_x, current_shape.pos_y, current_shape.size_x, current_shape.size_y).Contains(initial_mouse_pos))
-                    {
-                        current_shape.is_selected = !current_shape.is_selected;
-                        this.Refresh();
-                    }
-                }
-            }
-
             mouse_down = true;
-
         }
 
         private void DrawingApp_MouseUp(object sender, MouseEventArgs e)
@@ -173,59 +171,82 @@ namespace DrawingApp
             int size_x = mouse_pos.X - initial_mouse_pos.X;
             int size_y = mouse_pos.Y - initial_mouse_pos.Y;
 
-
-            if (size_x < 0 && size_y > 0)
+            if (mode == "Move" | mode == "Resize")
             {
-                if (mode == "Create Rectangle")
+                foreach (shape current_shape in shapequeue.Reverse())
                 {
-                    shapequeue.Enqueue(new shape("Rectangle", randomColor, mouse_pos.X, initial_mouse_pos.Y, size_x * -1, size_y, false));
-                }
-                else if (mode == "Create Ellipse")
-                {
-                    shapequeue.Enqueue(new shape("Ellipse", randomColor, mouse_pos.X, initial_mouse_pos.Y, size_x * -1, size_y, false));
-                }
-            }
-            else if (size_x > 0 && size_y < 0)
-            {
-                if (mode == "Create Rectangle")
-                {
-                    shapequeue.Enqueue(new shape("Rectangle", randomColor, initial_mouse_pos.X, mouse_pos.Y, size_x, size_y * -1, false));
-                }
-                else if (mode == "Create Ellipse")
-                {
-                    shapequeue.Enqueue(new shape("Ellipse", randomColor, initial_mouse_pos.X, mouse_pos.Y, size_x, size_y * -1, false));
-                }
-            }
-            else if (size_x < 0 && size_y < 0)
-            {
-                if (mode == "Create Rectangle")
-                {
-                    shapequeue.Enqueue(new shape("Rectangle", randomColor, mouse_pos.X, mouse_pos.Y, size_x * -1, size_y * -1, false));
-                }
-                else if (mode == "Create Ellipse")
-                {
-                    shapequeue.Enqueue(new shape("Ellipse", randomColor, mouse_pos.X, mouse_pos.Y, size_x * -1, size_y * -1, false));
+                    if (new Rectangle(current_shape.pos_x, current_shape.pos_y, current_shape.size_x, current_shape.size_y).Contains(initial_mouse_pos))
+                    {
+                        current_shape.is_selected = !current_shape.is_selected;
+                        this.Refresh();
+                        break;
+                    }
                 }
             }
             else
             {
-                if (mode == "Create Rectangle")
+                if (size_x < 0 && size_y > 0)
                 {
-                    shapequeue.Enqueue(new shape("Rectangle", randomColor, initial_mouse_pos.X, initial_mouse_pos.Y, size_x, size_y, false));
+                    if (mode == "Create Rectangle")
+                    {
+                        shapequeue.Enqueue(new shape("Rectangle", randomColor, mouse_pos.X, initial_mouse_pos.Y, size_x * -1, size_y, false));
+                    }
+                    else if (mode == "Create Ellipse")
+                    {
+                        shapequeue.Enqueue(new shape("Ellipse", randomColor, mouse_pos.X, initial_mouse_pos.Y, size_x * -1, size_y, false));
+                    }
                 }
-                else if (mode == "Create Ellipse")
+                else if (size_x > 0 && size_y < 0)
                 {
-                    shapequeue.Enqueue(new shape("Ellipse", randomColor, initial_mouse_pos.X, initial_mouse_pos.Y, size_x, size_y, false));
+                    if (mode == "Create Rectangle")
+                    {
+                        shapequeue.Enqueue(new shape("Rectangle", randomColor, initial_mouse_pos.X, mouse_pos.Y, size_x, size_y * -1, false));
+                    }
+                    else if (mode == "Create Ellipse")
+                    {
+                        shapequeue.Enqueue(new shape("Ellipse", randomColor, initial_mouse_pos.X, mouse_pos.Y, size_x, size_y * -1, false));
+                    }
                 }
+                else if (size_x < 0 && size_y < 0)
+                {
+                    if (mode == "Create Rectangle")
+                    {
+                        shapequeue.Enqueue(new shape("Rectangle", randomColor, mouse_pos.X, mouse_pos.Y, size_x * -1, size_y * -1, false));
+                    }
+                    else if (mode == "Create Ellipse")
+                    {
+                        shapequeue.Enqueue(new shape("Ellipse", randomColor, mouse_pos.X, mouse_pos.Y, size_x * -1, size_y * -1, false));
+                    }
+                }
+                else
+                {
+                    if (mode == "Create Rectangle")
+                    {
+                        shapequeue.Enqueue(new shape("Rectangle", randomColor, initial_mouse_pos.X, initial_mouse_pos.Y, size_x, size_y, false));
+                    }
+                    else if (mode == "Create Ellipse")
+                    {
+                        shapequeue.Enqueue(new shape("Ellipse", randomColor, initial_mouse_pos.X, initial_mouse_pos.Y, size_x, size_y, false));
+                    }
+                }
+                outline = null;
+                this.Refresh();
             }
-            outline = null;
-            this.Refresh();
         }
 
         private void modebox_SelectedIndexChanged(object sender, EventArgs e)
         {
             ComboBox comboBox = (ComboBox)sender;
+            if (mode != (string)comboBox.SelectedItem)
+            {
+                foreach (shape currentshape in shapequeue)
+                {
+                    currentshape.is_selected = false;
+                }
+                this.Refresh();
+            }
             mode = (string)comboBox.SelectedItem;
+            
         }
     }
     public class shape
