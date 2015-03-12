@@ -14,17 +14,13 @@ namespace DrawingApp
     public partial class DrawingApp : Form
     {
         Queue<shape> shapequeue = new Queue<shape>();  
-        shape outline = new shape("Outline Rectangle", Color.Black, 0, 0, 1, 1, false);
+        shape outline;
         string mode = "Create Rectangle";
-        int move_x = 0;
-        int move_y = 0;
         Random Random = new Random();
         bool mouse_down = false;
         Point initial_mouse_pos;
         Pen blackPen = new Pen(Color.Black, 3);
         Pen selected_pen = new Pen(Color.Black, 2);
-        
-        String new_pos;
 
         public DrawingApp()
         {
@@ -104,8 +100,6 @@ namespace DrawingApp
                 }
                 else { 
                 label1.Text = "Coordinates: " + this.PointToClient(Cursor.Position).X + "x" + this.PointToClient(Cursor.Position).Y;
-                
-                
                 if (size_x < 0 && size_y > 0)
                 {
                     if (mode == "Create Rectangle")
@@ -164,13 +158,6 @@ namespace DrawingApp
         private void DrawingApp_MouseUp(object sender, MouseEventArgs e)
         {
             mouse_down = false;
-            var mouse_pos = this.PointToClient(Cursor.Position);
-            Color randomColor = Color.FromArgb(Random.Next(255), Random.Next(255), Random.Next(255));
-            new_pos = mouse_pos.X + "x" + mouse_pos.Y;
-            SolidBrush brush = new SolidBrush(randomColor);
-            int size_x = mouse_pos.X - initial_mouse_pos.X;
-            int size_y = mouse_pos.Y - initial_mouse_pos.Y;
-
             if (mode == "Move" | mode == "Resize")
             {
                 foreach (shape current_shape in shapequeue.Reverse())
@@ -178,13 +165,16 @@ namespace DrawingApp
                     if (new Rectangle(current_shape.pos_x, current_shape.pos_y, current_shape.size_x, current_shape.size_y).Contains(initial_mouse_pos))
                     {
                         current_shape.is_selected = !current_shape.is_selected;
-                        this.Refresh();
                         break;
                     }
                 }
             }
             else
             {
+                var mouse_pos = this.PointToClient(Cursor.Position);
+                Color randomColor = Color.FromArgb(Random.Next(255), Random.Next(255), Random.Next(255));
+                int size_x = mouse_pos.X - initial_mouse_pos.X;
+                int size_y = mouse_pos.Y - initial_mouse_pos.Y;
                 if (size_x < 0 && size_y > 0)
                 {
                     if (mode == "Create Rectangle")
@@ -230,8 +220,8 @@ namespace DrawingApp
                     }
                 }
                 outline = null;
-                this.Refresh();
             }
+            this.Refresh();
         }
 
         private void modebox_SelectedIndexChanged(object sender, EventArgs e)
