@@ -243,13 +243,10 @@ namespace DrawingApp
         private void save_button_Click(object sender, EventArgs e)
         {
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-
             saveFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
             saveFileDialog1.FilterIndex = 2;
             saveFileDialog1.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             saveFileDialog1.RestoreDirectory = true;
-
-            
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 using (StreamWriter writer = new StreamWriter(saveFileDialog1.OpenFile()))
@@ -259,6 +256,30 @@ namespace DrawingApp
                         writer.WriteLine(currentshape.type + " " + currentshape.pos_x + " " + currentshape.pos_y + " " + currentshape.size_x + " " + currentshape.size_y);
                     }
                 }
+            }
+        }
+
+        private void load_button_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFielDialog = new OpenFileDialog();
+            openFielDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            openFielDialog.FilterIndex = 2;
+            openFielDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            openFielDialog.RestoreDirectory = true;
+            if (openFielDialog.ShowDialog() == DialogResult.OK)
+            {
+                shapequeue.Clear();
+                using (StreamReader reader = new StreamReader(openFielDialog.OpenFile()))
+                {
+                    while (!reader.EndOfStream)
+                    {
+                        Color randomColor = Color.FromArgb(Random.Next(255), Random.Next(255), Random.Next(255));
+                        string[] newline = reader.ReadLine().Split(' ');
+                        shapequeue.Enqueue(new shape(newline[0], randomColor, Convert.ToInt32(newline[1]), Convert.ToInt32(newline[2]), Convert.ToInt32(newline[3]), Convert.ToInt32(newline[4]), false));
+                        
+                    }
+                }
+                this.Refresh();
             }
         }
 
