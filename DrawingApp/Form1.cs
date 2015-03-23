@@ -283,6 +283,16 @@ namespace DrawingApp
             }
         }
 
+        private void undo_button_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void redo_button_Click(object sender, EventArgs e)
+        {
+
+        }
+
     }
     public class shape
     {

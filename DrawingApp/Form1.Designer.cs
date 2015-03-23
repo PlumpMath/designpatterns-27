@@ -29,28 +29,44 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.load_button = new System.Windows.Forms.Button();
             this.save_button = new System.Windows.Forms.Button();
             this.modebox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.load_button = new System.Windows.Forms.Button();
+            this.undo_button = new System.Windows.Forms.Button();
+            this.redo_button = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
+            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.BackColor = System.Drawing.SystemColors.ButtonShadow;
+            this.panel1.Controls.Add(this.redo_button);
+            this.panel1.Controls.Add(this.undo_button);
             this.panel1.Controls.Add(this.load_button);
             this.panel1.Controls.Add(this.save_button);
             this.panel1.Controls.Add(this.modebox);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Location = new System.Drawing.Point(12, 12);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(656, 57);
+            this.panel1.Size = new System.Drawing.Size(656, 30);
             this.panel1.TabIndex = 0;
+            // 
+            // load_button
+            // 
+            this.load_button.Location = new System.Drawing.Point(578, 3);
+            this.load_button.Name = "load_button";
+            this.load_button.Size = new System.Drawing.Size(75, 23);
+            this.load_button.TabIndex = 3;
+            this.load_button.Text = "Load";
+            this.load_button.UseVisualStyleBackColor = true;
+            this.load_button.Click += new System.EventHandler(this.load_button_Click);
             // 
             // save_button
             // 
-            this.save_button.Location = new System.Drawing.Point(500, 14);
+            this.save_button.Location = new System.Drawing.Point(497, 3);
             this.save_button.Name = "save_button";
             this.save_button.Size = new System.Drawing.Size(75, 23);
             this.save_button.TabIndex = 2;
@@ -67,30 +83,40 @@
             "Create Ellipse",
             "Move",
             "Resize"});
-            this.modebox.Location = new System.Drawing.Point(234, 16);
+            this.modebox.Location = new System.Drawing.Point(144, 5);
             this.modebox.Name = "modebox";
-            this.modebox.Size = new System.Drawing.Size(121, 21);
+            this.modebox.Size = new System.Drawing.Size(170, 21);
             this.modebox.TabIndex = 1;
             this.modebox.SelectedIndexChanged += new System.EventHandler(this.modebox_SelectedIndexChanged);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 19);
+            this.label1.Location = new System.Drawing.Point(3, 8);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(86, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Coordinates: 0x0";
             // 
-            // load_button
+            // undo_button
             // 
-            this.load_button.Location = new System.Drawing.Point(581, 14);
-            this.load_button.Name = "load_button";
-            this.load_button.Size = new System.Drawing.Size(75, 23);
-            this.load_button.TabIndex = 3;
-            this.load_button.Text = "Load";
-            this.load_button.UseVisualStyleBackColor = true;
-            this.load_button.Click += new System.EventHandler(this.load_button_Click);
+            this.undo_button.Location = new System.Drawing.Point(346, 3);
+            this.undo_button.Name = "undo_button";
+            this.undo_button.Size = new System.Drawing.Size(56, 23);
+            this.undo_button.TabIndex = 4;
+            this.undo_button.Text = "Undo";
+            this.undo_button.UseVisualStyleBackColor = true;
+            this.undo_button.Click += new System.EventHandler(this.undo_button_Click);
+            // 
+            // redo_button
+            // 
+            this.redo_button.Location = new System.Drawing.Point(408, 3);
+            this.redo_button.Name = "redo_button";
+            this.redo_button.Size = new System.Drawing.Size(54, 23);
+            this.redo_button.TabIndex = 5;
+            this.redo_button.Text = "Redo";
+            this.redo_button.UseVisualStyleBackColor = true;
+            this.redo_button.Click += new System.EventHandler(this.redo_button_Click);
             // 
             // DrawingApp
             // 
@@ -117,6 +143,8 @@
         private System.Windows.Forms.ComboBox modebox;
         private System.Windows.Forms.Button save_button;
         private System.Windows.Forms.Button load_button;
+        private System.Windows.Forms.Button redo_button;
+        private System.Windows.Forms.Button undo_button;
     }
 }
 
