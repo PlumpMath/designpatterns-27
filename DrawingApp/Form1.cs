@@ -240,28 +240,6 @@ namespace DrawingApp
             
         }
 
-        private void save_button_Click(object sender, EventArgs e)
-        {
-            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-
-            saveFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-            saveFileDialog1.FilterIndex = 2;
-            saveFileDialog1.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            saveFileDialog1.RestoreDirectory = true;
-
-            
-            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                using (StreamWriter writer = new StreamWriter(saveFileDialog1.OpenFile()))
-                {
-                    foreach (shape currentshape in shapequeue)
-                    {
-                        writer.WriteLine(currentshape.type + " " + currentshape.pos_x + " " + currentshape.pos_y + " " + currentshape.size_x + " " + currentshape.size_y);
-                    }
-                }
-            }
-        }
-
     }
     public class shape
     {
