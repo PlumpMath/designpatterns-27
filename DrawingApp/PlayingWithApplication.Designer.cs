@@ -29,12 +29,12 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.redo_button = new System.Windows.Forms.Button();
+            this.undo_button = new System.Windows.Forms.Button();
             this.load_button = new System.Windows.Forms.Button();
             this.save_button = new System.Windows.Forms.Button();
             this.modebox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.undo_button = new System.Windows.Forms.Button();
-            this.redo_button = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -54,6 +54,24 @@
             this.panel1.Size = new System.Drawing.Size(656, 30);
             this.panel1.TabIndex = 0;
             // 
+            // redo_button
+            // 
+            this.redo_button.Location = new System.Drawing.Point(408, 3);
+            this.redo_button.Name = "redo_button";
+            this.redo_button.Size = new System.Drawing.Size(54, 23);
+            this.redo_button.TabIndex = 5;
+            this.redo_button.Text = "Redo";
+            this.redo_button.UseVisualStyleBackColor = true;
+            // 
+            // undo_button
+            // 
+            this.undo_button.Location = new System.Drawing.Point(346, 3);
+            this.undo_button.Name = "undo_button";
+            this.undo_button.Size = new System.Drawing.Size(56, 23);
+            this.undo_button.TabIndex = 4;
+            this.undo_button.Text = "Undo";
+            this.undo_button.UseVisualStyleBackColor = true;
+            // 
             // load_button
             // 
             this.load_button.Location = new System.Drawing.Point(578, 3);
@@ -62,7 +80,6 @@
             this.load_button.TabIndex = 3;
             this.load_button.Text = "Load";
             this.load_button.UseVisualStyleBackColor = true;
-            this.load_button.Click += new System.EventHandler(this.load_button_Click);
             // 
             // save_button
             // 
@@ -72,7 +89,6 @@
             this.save_button.TabIndex = 2;
             this.save_button.Text = "Save";
             this.save_button.UseVisualStyleBackColor = true;
-            this.save_button.Click += new System.EventHandler(this.save_button_Click);
             // 
             // modebox
             // 
@@ -87,7 +103,6 @@
             this.modebox.Name = "modebox";
             this.modebox.Size = new System.Drawing.Size(170, 21);
             this.modebox.TabIndex = 1;
-            this.modebox.SelectedIndexChanged += new System.EventHandler(this.modebox_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -98,26 +113,6 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Coordinates: 0x0";
             // 
-            // undo_button
-            // 
-            this.undo_button.Location = new System.Drawing.Point(346, 3);
-            this.undo_button.Name = "undo_button";
-            this.undo_button.Size = new System.Drawing.Size(56, 23);
-            this.undo_button.TabIndex = 4;
-            this.undo_button.Text = "Undo";
-            this.undo_button.UseVisualStyleBackColor = true;
-            this.undo_button.Click += new System.EventHandler(this.undo_button_Click);
-            // 
-            // redo_button
-            // 
-            this.redo_button.Location = new System.Drawing.Point(408, 3);
-            this.redo_button.Name = "redo_button";
-            this.redo_button.Size = new System.Drawing.Size(54, 23);
-            this.redo_button.TabIndex = 5;
-            this.redo_button.Text = "Redo";
-            this.redo_button.UseVisualStyleBackColor = true;
-            this.redo_button.Click += new System.EventHandler(this.redo_button_Click);
-            // 
             // DrawingApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -125,11 +120,7 @@
             this.ClientSize = new System.Drawing.Size(680, 532);
             this.Controls.Add(this.panel1);
             this.Name = "DrawingApp";
-            this.Text = "Form1";
-            this.Paint += new System.Windows.Forms.PaintEventHandler(this.DrawingApp_Paint);
-            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.DrawingApp_MouseDown);
-            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.DrawingApp_MouseMove);
-            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.DrawingApp_MouseUp);
+            this.Text = "DrawingApplication";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);

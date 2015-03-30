@@ -44,16 +44,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form1.cs">
+    <Compile Include="ApplicationController.cs" />
+    <Compile Include="Command.cs" />
+    <Compile Include="ApplicationButton.cs" />
+    <Compile Include="DrawingApplication.cs" />
+    <Compile Include="DrawNewShape.cs" />
+    <Compile Include="PlayingWithApplication.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="PlayingWithApplication.Designer.cs">
+      <DependentUpon>PlayingWithApplication.cs</DependentUpon>
     </Compile>
+    <Compile Include="DrawingInterface.cs" />
+    <Compile Include="Load.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Redo.cs" />
+    <Compile Include="Save.cs" />
+    <Compile Include="Undo.cs" />
+    <EmbeddedResource Include="PlayingWithApplication.resx">
+      <DependentUpon>PlayingWithApplication.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -64,6 +74,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="ClassDiagram1.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
