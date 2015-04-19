@@ -44,24 +44,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ApplicationController.cs" />
-    <Compile Include="Command.cs" />
-    <Compile Include="ApplicationButton.cs" />
-    <Compile Include="DrawingApplication.cs" />
-    <Compile Include="DrawNewShape.cs" />
     <Compile Include="PlayingWithApplication.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="PlayingWithApplication.Designer.cs">
       <DependentUpon>PlayingWithApplication.cs</DependentUpon>
     </Compile>
-    <Compile Include="DrawingInterface.cs" />
-    <Compile Include="Load.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Redo.cs" />
-    <Compile Include="Save.cs" />
-    <Compile Include="Undo.cs" />
+    <Compile Include="Shape.cs" />
     <EmbeddedResource Include="PlayingWithApplication.resx">
       <DependentUpon>PlayingWithApplication.cs</DependentUpon>
     </EmbeddedResource>

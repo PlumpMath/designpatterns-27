@@ -62,6 +62,7 @@
             this.redo_button.TabIndex = 5;
             this.redo_button.Text = "Redo";
             this.redo_button.UseVisualStyleBackColor = true;
+            this.redo_button.Click += new System.EventHandler(this.redo_button_Click);
             // 
             // undo_button
             // 
@@ -71,6 +72,7 @@
             this.undo_button.TabIndex = 4;
             this.undo_button.Text = "Undo";
             this.undo_button.UseVisualStyleBackColor = true;
+            this.undo_button.Click += new System.EventHandler(this.undo_button_Click);
             // 
             // load_button
             // 
@@ -80,6 +82,7 @@
             this.load_button.TabIndex = 3;
             this.load_button.Text = "Load";
             this.load_button.UseVisualStyleBackColor = true;
+            this.load_button.Click += new System.EventHandler(this.load_button_Click);
             // 
             // save_button
             // 
@@ -89,6 +92,7 @@
             this.save_button.TabIndex = 2;
             this.save_button.Text = "Save";
             this.save_button.UseVisualStyleBackColor = true;
+            this.save_button.Click += new System.EventHandler(this.save_button_Click);
             // 
             // modebox
             // 
@@ -121,6 +125,10 @@
             this.Controls.Add(this.panel1);
             this.Name = "DrawingApp";
             this.Text = "DrawingApplication";
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.DrawingApp_Paint);
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.DrawingApp_MouseDown);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.DrawingApp_MouseMove);
+            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.DrawingApp_MouseUp);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);
