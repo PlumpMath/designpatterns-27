@@ -107,6 +107,7 @@
             this.modebox.Name = "modebox";
             this.modebox.Size = new System.Drawing.Size(170, 21);
             this.modebox.TabIndex = 1;
+            this.modebox.SelectedIndexChanged += new System.EventHandler(this.modebox_SelectedIndexChanged);
             // 
             // label1
             // 

@@ -17,11 +17,11 @@ C:\Users\Hendrik\Documents\Visual Studio 2013\Projects\designpatterns\DrawingApp
 C:\Users\Hendrik\Documents\Visual Studio 2013\Projects\designpatterns\DrawingApp\obj\Debug\DrawingApp.Properties.Resources.resources
 C:\Users\Hendrik\Documents\Visual Studio 2013\Projects\designpatterns\DrawingApp\obj\Debug\DrawingApp.csproj.GenerateResource.Cache
 C:\Users\Gyrth\Documents\designpatterns\DrawingApp\bin\Debug\DrawingApp.exe.config
-C:\Users\Gyrth\Documents\designpatterns\DrawingApp\obj\Debug\DrawingApp.exe
-C:\Users\Gyrth\Documents\designpatterns\DrawingApp\obj\Debug\DrawingApp.pdb
 C:\Users\Gyrth\Documents\designpatterns\DrawingApp\bin\Debug\DrawingApp.exe
 C:\Users\Gyrth\Documents\designpatterns\DrawingApp\bin\Debug\DrawingApp.pdb
 C:\Users\Gyrth\Documents\designpatterns\DrawingApp\obj\Debug\DrawingApp.csprojResolveAssemblyReference.cache
 C:\Users\Gyrth\Documents\designpatterns\DrawingApp\obj\Debug\DrawingApp.DrawingApp.resources
 C:\Users\Gyrth\Documents\designpatterns\DrawingApp\obj\Debug\DrawingApp.Properties.Resources.resources
 C:\Users\Gyrth\Documents\designpatterns\DrawingApp\obj\Debug\DrawingApp.csproj.GenerateResource.Cache
+C:\Users\Gyrth\Documents\designpatterns\DrawingApp\obj\Debug\DrawingApp.exe
+C:\Users\Gyrth\Documents\designpatterns\DrawingApp\obj\Debug\DrawingApp.pdb

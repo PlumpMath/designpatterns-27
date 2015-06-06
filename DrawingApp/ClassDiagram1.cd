@@ -3,6 +3,11 @@
   <Class Name="DrawingApp.DrawingApp">
     <Position X="7.5" Y="0.5" Width="1.5" />
     <NestedTypes>
+      <Class Name="DrawingApp.DrawingApp.UndoableCommand" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>PlayingWithApplication.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
       <Class Name="DrawingApp.DrawingApp.NormalCommand" Collapsed="true">
         <TypeIdentifier>
           <NewMemberFileName>PlayingWithApplication.cs</NewMemberFileName>
@@ -23,14 +28,24 @@
           <NewMemberFileName>PlayingWithApplication.cs</NewMemberFileName>
         </TypeIdentifier>
       </Class>
-      <Class Name="DrawingApp.DrawingApp.UndoableCommand" Collapsed="true">
+      <Class Name="DrawingApp.DrawingApp.LoadCommand" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>PlayingWithApplication.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="DrawingApp.DrawingApp.SaveCommand" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>PlayingWithApplication.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="DrawingApp.DrawingApp.MoveShapeCommand" Collapsed="true">
         <TypeIdentifier>
           <NewMemberFileName>PlayingWithApplication.cs</NewMemberFileName>
         </TypeIdentifier>
       </Class>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>CAAAiABIACADANGAAECAAABSFACAAiAACAAAAQQAASA=</HashCode>
+      <HashCode>AAAAiABIACADAJGAAECAAABSFACABCAACAAAAUQCASA=</HashCode>
       <FileName>PlayingWithApplication.cs</FileName>
     </TypeIdentifier>
   </Class>
