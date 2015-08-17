@@ -127,6 +127,7 @@
             this.Name = "DrawingApp";
             this.Text = "DrawingApplication";
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.DrawingApp_Paint);
+            this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.DrawingApp_MouseClick);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.DrawingApp_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.DrawingApp_MouseMove);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.DrawingApp_MouseUp);

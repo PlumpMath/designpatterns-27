@@ -17,8 +17,6 @@ namespace DrawingApp
         Pen blackPen = new Pen(Color.Black, 3);
         Pen selected_pen = new Pen(Color.Black, 2);
         DrawingWindow mainWindow;
-        static Stack<Shape> redostack;
-        static Stack<Shape> shapestack;
         Shape outline;
         static Random Random = new Random();
         Point initialMousePos;
@@ -32,18 +30,12 @@ namespace DrawingApp
             modebox.SelectedIndex = 0;
             //Create a new window
             mainWindow = new DrawingWindow();
-            redostack = new Stack<Shape>();
-            shapestack = new Stack<Shape>();
             
         }
         abstract class UndoableCommand
         {
             public abstract void Execute();
             public abstract void UnExecute();
-        }
-        abstract class NormalCommand
-        {
-            public abstract void Execute();
         }
         class MoveShapeCommand : UndoableCommand
         {
@@ -76,6 +68,39 @@ namespace DrawingApp
                 shape.pos_y = old_pos_y;
             }
         }
+        class ResizeShapeCommand : UndoableCommand
+        {
+            private Shape shape;
+            private Controller controller;
+            private int old_size_x;
+            private int old_size_y;
+            private int new_size_x;
+            private int new_size_y;
+
+            public ResizeShapeCommand(Controller controller, Shape shape, int new_x_size, int new_y_size)
+            {
+                this.controller = controller;
+                this.shape = shape;
+                this.new_size_x = new_x_size;
+                this.new_size_y = new_y_size;
+            }
+
+            public override void Execute()
+            {
+                Console.WriteLine("resizing");
+                old_size_x = shape.size_x;
+                old_size_y = shape.size_y;
+                shape.size_x = new_size_x;
+                shape.size_y = new_size_y;
+            }
+
+            public override void UnExecute()
+            {
+                Console.WriteLine("undoing resizing");
+                shape.size_x = old_size_x;
+                shape.size_y = old_size_y;
+            }
+        }
         class AddShapeCommand : UndoableCommand
         {
             private Shape shape;
@@ -97,46 +122,54 @@ namespace DrawingApp
             // Unexecute last command
             public override void UnExecute()
             {
-                controller.RemoveShape();
+                controller.RemoveShape(shape);
                 
             }
         }
-        class SaveCommand : NormalCommand
+        class SaveCommand
         {
             private Controller controller;
             public SaveCommand(Controller controller)
             {
                 this.controller = controller;
             }
-            public override void Execute()
+            public void Execute(Stack<UndoableCommand> currentCommandStack)
             {
-                controller.SaveToFile();
+                controller.SaveToFile(currentCommandStack);
             }
         }
-        class LoadCommand : NormalCommand
+        class LoadCommand
         {
             private Controller controller;
             public LoadCommand(Controller controller)
             {
                 this.controller = controller;
             }
-            public override void Execute()
+            public Stack<UndoableCommand> Execute()
             {
-                controller.LoadFile();
+                return controller.LoadFile(controller);
             }
         }
         class Controller
         {
+            private List<Shape> shapeList = new List<Shape>();
+
+            public List<Shape> GetShapes()
+            {
+                return shapeList;
+            }
 
             public void AddShape(Shape shape)
             {
-                shapestack.Push(shape);
+                Console.WriteLine("Adding shape.");
+                shapeList.Add(shape);
             }
-            public void RemoveShape()
+            public void RemoveShape(Shape shape)
             {
-                redostack.Push(shapestack.Pop());
+                Console.WriteLine("Removing shape.");
+                shapeList.Remove(shape);
             }
-            public void SaveToFile()
+            public void SaveToFile(Stack<UndoableCommand> currentCommandStack)
             {
                 SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
@@ -150,58 +183,76 @@ namespace DrawingApp
                 {
                     using (StreamWriter writer = new StreamWriter(saveFileDialog1.OpenFile()))
                     {
-                        foreach (Shape currentshape in shapestack)
+                        foreach (UndoableCommand command in currentCommandStack)
                         {
-                            writer.WriteLine(currentshape.type + " " + currentshape.pos_x + " " + currentshape.pos_y + " " + currentshape.size_x + " " + currentshape.size_y);
+                            
                         }
                     }
                 }
             }
-            public void LoadFile()
+            public Stack<UndoableCommand> LoadFile(Controller controller)
             {
                 OpenFileDialog openFielDialog = new OpenFileDialog();
                 openFielDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
                 openFielDialog.FilterIndex = 2;
                 openFielDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 openFielDialog.RestoreDirectory = true;
+                Stack<UndoableCommand> returnstack = new Stack<UndoableCommand>();
                 if (openFielDialog.ShowDialog() == DialogResult.OK)
                 {
-                    shapestack.Clear();
                     using (StreamReader reader = new StreamReader(openFielDialog.OpenFile()))
                     {
                         while (!reader.EndOfStream)
                         {
                             Color randomColor = Color.FromArgb(Random.Next(255), Random.Next(255), Random.Next(255));
                             string[] newline = reader.ReadLine().Split(' ');
-                            shapestack.Push(new Shape(newline[0], randomColor, Convert.ToInt32(newline[1]), Convert.ToInt32(newline[2]), Convert.ToInt32(newline[3]), Convert.ToInt32(newline[4]), false));
+                            Shape newshape = new Shape(newline[0], randomColor, Convert.ToInt32(newline[1]), Convert.ToInt32(newline[2]), Convert.ToInt32(newline[3]), Convert.ToInt32(newline[4]), false);
+                            AddShapeCommand newcommand = new AddShapeCommand(controller, newshape);
+                            returnstack.Push(newcommand);
+                            
+                            
                         }
+                        
+                        return returnstack;
                     }
                 }
+                return null;
             }
         }
         class DrawingWindow
         {
             // Initializers
             private Controller controller = new Controller();
-            private List<UndoableCommand> commandList = new List<UndoableCommand>();
-            private int _current = 0;
+            private Stack<UndoableCommand> commandstack = new Stack<UndoableCommand>();
+            private Stack<UndoableCommand> redocommandstack = new Stack<UndoableCommand>();
+
+            public Stack<UndoableCommand> GetCommandStack()
+            {
+                return commandstack;
+            }
+            public List<Shape> GetShapes()
+            {
+                return controller.GetShapes();
+            }
 
             public void Redo()
             {
                 // Perform redo operations
-                if (_current < commandList.Count)
+                if (redocommandstack.Count > 0)
                 {
-                    UndoableCommand command = commandList[_current++] as UndoableCommand;
+                    UndoableCommand command = redocommandstack.Pop();
                     command.Execute();
+                    commandstack.Push(command);
                 }
             }
             public void Undo()
             {
                 // Perform undo operations
-                if (_current > 0)
+                if (commandstack.Count > 0)
                 {
-                    UndoableCommand command = commandList[--_current] as UndoableCommand;
+                    UndoableCommand command = commandstack.Pop();
                     command.UnExecute();
+                    redocommandstack.Push(command);
                 }
             }
             public void AddShape(Shape shape)
@@ -209,30 +260,35 @@ namespace DrawingApp
                 // Create command operation and execute it
                 UndoableCommand command = new AddShapeCommand(controller,shape);
                 command.Execute();
-
-                // Add command to undo list
-                commandList.Add(command);
-                _current++;
+                // Add command to command stack
+                commandstack.Push(command);
             }
             public void MoveShape(Shape shape, int new_x_pos, int new_y_pos)
             {
                 // Create command operation and execute it
                 UndoableCommand command = new MoveShapeCommand(controller, shape, new_x_pos, new_y_pos);
                 command.Execute();
-
-                // Add command to undo list
-                commandList.Add(command);
-                _current++;
+                // Add command to command stack
+                commandstack.Push(command);
             }
-            public void Save()
+            public void ResizeShape(Shape shape, int new_x_size, int new_y_size)
             {
-                NormalCommand command = new SaveCommand(controller);
+                // Create command operation and execute it
+                UndoableCommand command = new ResizeShapeCommand(controller, shape, new_x_size, new_y_size);
                 command.Execute();
+                // Add command to command stack
+                commandstack.Push(command);
+            }
+            public void Save(Stack<UndoableCommand> currentCommandStack)
+            {
+                SaveCommand command = new SaveCommand(controller);
+                command.Execute(currentCommandStack);
             }
             public void Load()
             {
-                NormalCommand command = new LoadCommand(controller);
-                command.Execute();
+             
+                LoadCommand command = new LoadCommand(controller);
+                commandstack = command.Execute();
             }
 
         }
@@ -250,7 +306,7 @@ namespace DrawingApp
 
         private void save_button_Click(object sender, EventArgs e)
         {
-            mainWindow.Save();
+            mainWindow.Save(mainWindow.GetCommandStack());
             this.Refresh();
         }
 
@@ -272,11 +328,11 @@ namespace DrawingApp
             //This is the code to select a shape while Move or Resize is selected.
             if (mode == "Move" | mode == "Resize")
             {
-                foreach (Shape current_shape in shapestack)
+                foreach (Shape currentShape in this.mainWindow.GetShapes())
                 {
-                    if (new Rectangle(current_shape.pos_x, current_shape.pos_y, current_shape.size_x, current_shape.size_y).Contains(initialMousePos))
+                    if (new Rectangle(currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y).Contains(initialMousePos))
                     {
-                        current_shape.is_selected = !current_shape.is_selected;
+                        currentShape.is_selected = !currentShape.is_selected;
                         //Make sure to break or else all the underlaying shapes will also be selected.
                         break;
                     }
@@ -290,53 +346,56 @@ namespace DrawingApp
                 //The size of the new shape can already be calculated.
                 int size_x = mouse_pos.X - initialMousePos.X;
                 int size_y = mouse_pos.Y - initialMousePos.Y;
-                if (size_x < 0 && size_y > 0)
+                if (size_x != 0 || size_y != 0)
                 {
-                    if (mode == "Create Rectangle")
+                    if (size_x < 0 && size_y > 0)
                     {
-                        //To not have any negative numbers some of the variables need to be multiplied by -1.
-                        mainWindow.AddShape(new Shape("Rectangle", randomColor, mouse_pos.X, initialMousePos.Y, size_x * -1, size_y, false));
+                        if (mode == "Create Rectangle")
+                        {
+                            //To not have any negative numbers some of the variables need to be multiplied by -1.
+                            mainWindow.AddShape(new Shape("Rectangle", randomColor, mouse_pos.X, initialMousePos.Y, size_x * -1, size_y, false));
+                        }
+                        else if (mode == "Create Ellipse")
+                        {
+                            //This will execute the AddShape command
+                            mainWindow.AddShape(new Shape("Ellipse", randomColor, mouse_pos.X, initialMousePos.Y, size_x * -1, size_y, false));
+                        }
                     }
-                    else if (mode == "Create Ellipse")
+                    else if (size_x > 0 && size_y < 0)
                     {
-                        //This will execute the AddShape command
-                        mainWindow.AddShape(new Shape("Ellipse", randomColor, mouse_pos.X, initialMousePos.Y, size_x * -1, size_y, false));
+                        if (mode == "Create Rectangle")
+                        {
+                            mainWindow.AddShape(new Shape("Rectangle", randomColor, initialMousePos.X, mouse_pos.Y, size_x, size_y * -1, false));
+                        }
+                        else if (mode == "Create Ellipse")
+                        {
+                            mainWindow.AddShape(new Shape("Ellipse", randomColor, initialMousePos.X, mouse_pos.Y, size_x, size_y * -1, false));
+                        }
                     }
+                    else if (size_x < 0 && size_y < 0)
+                    {
+                        if (mode == "Create Rectangle")
+                        {
+                            mainWindow.AddShape(new Shape("Rectangle", randomColor, mouse_pos.X, mouse_pos.Y, size_x * -1, size_y * -1, false));
+                        }
+                        else if (mode == "Create Ellipse")
+                        {
+                            mainWindow.AddShape(new Shape("Ellipse", randomColor, mouse_pos.X, mouse_pos.Y, size_x * -1, size_y * -1, false));
+                        }
+                    }
+                    else
+                    {
+                        if (mode == "Create Rectangle")
+                        {
+                            mainWindow.AddShape(new Shape("Rectangle", randomColor, initialMousePos.X, initialMousePos.Y, size_x, size_y, false));
+                        }
+                        else if (mode == "Create Ellipse")
+                        {
+                            mainWindow.AddShape(new Shape("Ellipse", randomColor, initialMousePos.X, initialMousePos.Y, size_x, size_y, false));
+                        }
+                    }
+                    outline = null;
                 }
-                else if (size_x > 0 && size_y < 0)
-                {
-                    if (mode == "Create Rectangle")
-                    {
-                        mainWindow.AddShape(new Shape("Rectangle", randomColor, initialMousePos.X, mouse_pos.Y, size_x, size_y * -1, false));
-                    }
-                    else if (mode == "Create Ellipse")
-                    {
-                        mainWindow.AddShape(new Shape("Ellipse", randomColor, initialMousePos.X, mouse_pos.Y, size_x, size_y * -1, false));
-                    }
-                }
-                else if (size_x < 0 && size_y < 0)
-                {
-                    if (mode == "Create Rectangle")
-                    {
-                        mainWindow.AddShape(new Shape("Rectangle", randomColor, mouse_pos.X, mouse_pos.Y, size_x * -1, size_y * -1, false));
-                    }
-                    else if (mode == "Create Ellipse")
-                    {
-                        mainWindow.AddShape(new Shape("Ellipse", randomColor, mouse_pos.X, mouse_pos.Y, size_x * -1, size_y * -1, false));
-                    }
-                }
-                else
-                {
-                    if (mode == "Create Rectangle")
-                    {
-                        mainWindow.AddShape(new Shape("Rectangle", randomColor, initialMousePos.X, initialMousePos.Y, size_x, size_y, false));
-                    }
-                    else if (mode == "Create Ellipse")
-                    {
-                        mainWindow.AddShape(new Shape("Ellipse", randomColor, initialMousePos.X, initialMousePos.Y, size_x, size_y, false));
-                    }
-                }
-                outline = null;
             }
             //Once the shape is added the whole window needs to be refreshed.
             this.Refresh();
@@ -346,23 +405,27 @@ namespace DrawingApp
         {
             Graphics g = e.Graphics;
             //While painting the app needs to redraw every shape in the shapequeue.
-                foreach (Shape current_shape in shapestack.Reverse())
+                foreach (UndoableCommand currentCommand in this.mainWindow.GetCommandStack())
                 {
-                    SolidBrush brush = new SolidBrush(current_shape.back_color);
-                    if (current_shape.type == "Rectangle")
+                    List<Shape> allShapes = this.mainWindow.GetShapes();
+                    foreach (Shape currentShape in allShapes)
                     {
-                        g.FillRectangle(brush, current_shape.pos_x, current_shape.pos_y, current_shape.size_x, current_shape.size_y);
-                        if (current_shape.is_selected)
+                        SolidBrush brush = new SolidBrush(currentShape.back_color);
+                        if (currentShape.type == "Rectangle")
                         {
-                            g.DrawRectangle(selected_pen, current_shape.pos_x, current_shape.pos_y, current_shape.size_x, current_shape.size_y);
+                            g.FillRectangle(brush, currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y);
+                            if (currentShape.is_selected)
+                            {
+                                g.DrawRectangle(selected_pen, currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y);
+                            }
                         }
-                    }
-                    else if (current_shape.type == "Ellipse")
-                    {
-                        g.FillEllipse(brush, current_shape.pos_x, current_shape.pos_y, current_shape.size_x, current_shape.size_y);
-                        if (current_shape.is_selected)
+                        else if (currentShape.type == "Ellipse")
                         {
-                            g.DrawEllipse(selected_pen, current_shape.pos_x, current_shape.pos_y, current_shape.size_x, current_shape.size_y);
+                            g.FillEllipse(brush, currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y);
+                            if (currentShape.is_selected)
+                            {
+                                g.DrawEllipse(selected_pen, currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y);
+                            }
                         }
                     }
                 }
@@ -389,7 +452,7 @@ namespace DrawingApp
                 int size_y = mouse_pos.Y - initialMousePos.Y;
                 if (mode == "Move")
                 {
-                    foreach (Shape current_shape in shapestack)
+                    foreach (Shape current_shape in this.mainWindow.GetShapes())
                     {
                         if (current_shape.is_selected)
                         {
@@ -402,7 +465,7 @@ namespace DrawingApp
                 }
                 if (mode == "Resize")
                 {
-                    foreach (Shape current_shape in shapestack)
+                    foreach (Shape current_shape in this.mainWindow.GetShapes())
                     {
                         if (current_shape.is_selected)
                         {
@@ -472,13 +535,37 @@ namespace DrawingApp
             ComboBox comboBox = (ComboBox)sender;
             if (mode != (string)comboBox.SelectedItem)
             {
-                foreach (Shape currentshape in shapestack)
+                foreach (Shape currentshape in this.mainWindow.GetShapes())
                 {
                     currentshape.is_selected = false;
                 }
                 this.Refresh();
             }
             mode = (string)comboBox.SelectedItem;
+        }
+
+        private void DrawingApp_MouseClick(object sender, MouseEventArgs e)
+        {
+            Console.WriteLine("Clicked");
+            if (mode == "Move")
+            {
+                foreach (Shape currentShape in this.mainWindow.GetShapes())
+                {
+                    if (currentShape.is_selected)
+                    {
+                        mainWindow.MoveShape(currentShape, currentShape.pos_x, currentShape.pos_y);
+                    }
+                }
+            }
+            else if(mode == "Resize"){
+                foreach (Shape currentShape in this.mainWindow.GetShapes())
+                {
+                    if (currentShape.is_selected)
+                    {
+                        mainWindow.ResizeShape(currentShape, currentShape.size_x, currentShape.size_y);
+                    }
+                }
+            }
         }
     }
 }
