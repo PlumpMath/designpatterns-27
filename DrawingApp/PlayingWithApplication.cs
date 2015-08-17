@@ -87,7 +87,6 @@ namespace DrawingApp
 
             public override void Execute()
             {
-                Console.WriteLine("resizing");
                 old_size_x = shape.size_x;
                 old_size_y = shape.size_y;
                 shape.size_x = new_size_x;
@@ -96,7 +95,6 @@ namespace DrawingApp
 
             public override void UnExecute()
             {
-                Console.WriteLine("undoing resizing");
                 shape.size_x = old_size_x;
                 shape.size_y = old_size_y;
             }
@@ -128,14 +126,16 @@ namespace DrawingApp
         }
         class SaveCommand
         {
+            //The save and load command only have an execute function.
+            //So it doesn't inherit from undoablecommand.
             private Controller controller;
             public SaveCommand(Controller controller)
             {
                 this.controller = controller;
             }
-            public void Execute(Stack<UndoableCommand> currentCommandStack)
+            public void Execute(List<Shape> shapeList)
             {
-                controller.SaveToFile(currentCommandStack);
+                controller.SaveToFile(shapeList);
             }
         }
         class LoadCommand
@@ -161,15 +161,13 @@ namespace DrawingApp
 
             public void AddShape(Shape shape)
             {
-                Console.WriteLine("Adding shape.");
                 shapeList.Add(shape);
             }
             public void RemoveShape(Shape shape)
             {
-                Console.WriteLine("Removing shape.");
                 shapeList.Remove(shape);
             }
-            public void SaveToFile(Stack<UndoableCommand> currentCommandStack)
+            public void SaveToFile(List<Shape> shapeList)
             {
                 SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
@@ -183,9 +181,11 @@ namespace DrawingApp
                 {
                     using (StreamWriter writer = new StreamWriter(saveFileDialog1.OpenFile()))
                     {
-                        foreach (UndoableCommand command in currentCommandStack)
+                        
+                        foreach (Shape shape in shapeList)
                         {
-                            
+                            //Only the important info is saved. Not the color. Unnessesary.
+                            writer.WriteLine(shape.type + " " + shape.pos_x + " " + shape.pos_y + " " + shape.size_x + " " + shape.size_y);
                         }
                     }
                 }
@@ -209,8 +209,9 @@ namespace DrawingApp
                             Shape newshape = new Shape(newline[0], randomColor, Convert.ToInt32(newline[1]), Convert.ToInt32(newline[2]), Convert.ToInt32(newline[3]), Convert.ToInt32(newline[4]), false);
                             AddShapeCommand newcommand = new AddShapeCommand(controller, newshape);
                             returnstack.Push(newcommand);
-                            
-                            
+                            //Every command needs to be executed to add the shapes to the screen.
+                            //So even adding shapes by loading is undoable.
+                            newcommand.Execute();
                         }
                         
                         return returnstack;
@@ -279,14 +280,13 @@ namespace DrawingApp
                 // Add command to command stack
                 commandstack.Push(command);
             }
-            public void Save(Stack<UndoableCommand> currentCommandStack)
+            public void Save(List<Shape> shapeList)
             {
                 SaveCommand command = new SaveCommand(controller);
-                command.Execute(currentCommandStack);
+                command.Execute(shapeList);
             }
             public void Load()
             {
-             
                 LoadCommand command = new LoadCommand(controller);
                 commandstack = command.Execute();
             }
@@ -306,7 +306,7 @@ namespace DrawingApp
 
         private void save_button_Click(object sender, EventArgs e)
         {
-            mainWindow.Save(mainWindow.GetCommandStack());
+            mainWindow.Save(mainWindow.GetShapes());
             this.Refresh();
         }
 
@@ -405,30 +405,28 @@ namespace DrawingApp
         {
             Graphics g = e.Graphics;
             //While painting the app needs to redraw every shape in the shapequeue.
-                foreach (UndoableCommand currentCommand in this.mainWindow.GetCommandStack())
+            List<Shape> allShapes = this.mainWindow.GetShapes();
+            foreach (Shape currentShape in allShapes)
+            {
+                SolidBrush brush = new SolidBrush(currentShape.back_color);
+                if (currentShape.type == "Rectangle")
                 {
-                    List<Shape> allShapes = this.mainWindow.GetShapes();
-                    foreach (Shape currentShape in allShapes)
+                    g.FillRectangle(brush, currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y);
+                    if (currentShape.is_selected)
                     {
-                        SolidBrush brush = new SolidBrush(currentShape.back_color);
-                        if (currentShape.type == "Rectangle")
-                        {
-                            g.FillRectangle(brush, currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y);
-                            if (currentShape.is_selected)
-                            {
-                                g.DrawRectangle(selected_pen, currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y);
-                            }
-                        }
-                        else if (currentShape.type == "Ellipse")
-                        {
-                            g.FillEllipse(brush, currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y);
-                            if (currentShape.is_selected)
-                            {
-                                g.DrawEllipse(selected_pen, currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y);
-                            }
-                        }
+                        g.DrawRectangle(selected_pen, currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y);
                     }
                 }
+                else if (currentShape.type == "Ellipse")
+                {
+                    g.FillEllipse(brush, currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y);
+                    if (currentShape.is_selected)
+                    {
+                        g.DrawEllipse(selected_pen, currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y);
+                    }
+                }
+            }
+            
             //And an outline needs to be drawn as well to show a new shape is being created.
             if (outline != null)
             {
@@ -445,6 +443,7 @@ namespace DrawingApp
 
         private void DrawingApp_MouseMove(object sender, MouseEventArgs e)
         {
+            //Outlines while creating/moving or resizing.
             if (mouseDown)
             {
                 var mouse_pos = this.PointToClient(Cursor.Position);
@@ -456,9 +455,8 @@ namespace DrawingApp
                     {
                         if (current_shape.is_selected)
                         {
-                            //Change the position of every shape that has the is_selected boolean active.
-                            current_shape.pos_x = mouse_pos.X - current_shape.size_x / 2;
-                            current_shape.pos_y = mouse_pos.Y - current_shape.size_y / 2;
+                            //Add an outline to show where the shape will be moved to.
+                            outline = new Shape("Outline " + current_shape.type, Color.Black, mouse_pos.X - current_shape.size_x / 2, mouse_pos.Y - current_shape.size_y / 2, current_shape.size_x, current_shape.size_y, false);
                             this.Refresh();
                         }
                     }
@@ -470,8 +468,7 @@ namespace DrawingApp
                         if (current_shape.is_selected)
                         {
                             //Change the size of every shape that has the is_selected boolean active.
-                            current_shape.size_x = mouse_pos.X - current_shape.pos_x;
-                            current_shape.size_y = mouse_pos.Y - current_shape.pos_y;
+                            outline = new Shape("Outline " + current_shape.type, Color.Black, current_shape.pos_x, current_shape.pos_y, mouse_pos.X - current_shape.pos_x, mouse_pos.Y - current_shape.pos_y, false);
                             this.Refresh();
                         }
                     }
@@ -546,25 +543,32 @@ namespace DrawingApp
 
         private void DrawingApp_MouseClick(object sender, MouseEventArgs e)
         {
-            Console.WriteLine("Clicked");
-            if (mode == "Move")
+            //This function is used to finalize the move or resize.
+            Point finalMousePos = this.PointToClient(Cursor.Position);
+            if (initialMousePos != finalMousePos)
             {
-                foreach (Shape currentShape in this.mainWindow.GetShapes())
+                if (mode == "Move")
                 {
-                    if (currentShape.is_selected)
+                    foreach (Shape currentShape in this.mainWindow.GetShapes())
                     {
-                        mainWindow.MoveShape(currentShape, currentShape.pos_x, currentShape.pos_y);
+                        if (currentShape.is_selected)
+                        {
+                            mainWindow.MoveShape(currentShape, finalMousePos.X - currentShape.size_x / 2, finalMousePos.Y - currentShape.size_y / 2);
+                        }
                     }
                 }
-            }
-            else if(mode == "Resize"){
-                foreach (Shape currentShape in this.mainWindow.GetShapes())
+                else if (mode == "Resize")
                 {
-                    if (currentShape.is_selected)
+                    foreach (Shape currentShape in this.mainWindow.GetShapes())
                     {
-                        mainWindow.ResizeShape(currentShape, currentShape.size_x, currentShape.size_y);
+                        if (currentShape.is_selected)
+                        {
+                            mainWindow.ResizeShape(currentShape, finalMousePos.X - currentShape.pos_x, finalMousePos.Y - currentShape.pos_y);
+                        }
                     }
                 }
+                //Once a move or reszie is done the outline needs to be removed.
+                outline = null;
             }
         }
     }
