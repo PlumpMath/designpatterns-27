@@ -7,25 +7,18 @@ using System.Threading.Tasks;
 
 namespace DrawingApp
 {
-    class Shape
+    class Shape : ShapeComponent
     {
         //A shape class can store all the information. And it will be added to teh shapequeue once it is created.
-        public String type { get; set; }
-        public Color back_color { get; set; }
-        public int pos_x { get; set; }
-        public int pos_y { get; set; }
-        public int size_x { get; set; }
-        public int size_y { get; set; }
-        public bool is_selected { get; set; }
-        public Shape(String Type, Color BackgroundColor, int PositionX, int PositionY, int SizeX, int SizeY, bool isSelected)
+        public Shape(string Type, Color BackgroundColor, int PositionX, int PositionY, int SizeX, int SizeY, bool isSelected)
+            : base(Type, BackgroundColor, PositionX, PositionY, SizeX, SizeY, isSelected)
         {
-            type = Type;
-            back_color = BackgroundColor;
-            pos_x = PositionX;
-            pos_y = PositionY;
-            size_x = SizeX;
-            size_y = SizeY;
-            is_selected = isSelected;
+
+        }
+
+        public override void GetGroupedShapes(int index)
+        {
+            base.GetGroupedShapes(index);
         }
     }
 }

@@ -35,6 +35,8 @@
             this.save_button = new System.Windows.Forms.Button();
             this.modebox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.GroupButton = new System.Windows.Forms.Button();
+            this.UngroupButton = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -43,6 +45,8 @@
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.BackColor = System.Drawing.SystemColors.ButtonShadow;
+            this.panel1.Controls.Add(this.UngroupButton);
+            this.panel1.Controls.Add(this.GroupButton);
             this.panel1.Controls.Add(this.redo_button);
             this.panel1.Controls.Add(this.undo_button);
             this.panel1.Controls.Add(this.load_button);
@@ -51,7 +55,7 @@
             this.panel1.Controls.Add(this.label1);
             this.panel1.Location = new System.Drawing.Point(12, 12);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(656, 30);
+            this.panel1.Size = new System.Drawing.Size(822, 30);
             this.panel1.TabIndex = 0;
             // 
             // redo_button
@@ -118,11 +122,31 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Coordinates: 0x0";
             // 
+            // GroupButton
+            // 
+            this.GroupButton.Location = new System.Drawing.Point(659, 3);
+            this.GroupButton.Name = "GroupButton";
+            this.GroupButton.Size = new System.Drawing.Size(75, 23);
+            this.GroupButton.TabIndex = 6;
+            this.GroupButton.Text = "Group";
+            this.GroupButton.UseVisualStyleBackColor = true;
+            this.GroupButton.Click += new System.EventHandler(this.GroupButton_Click);
+            // 
+            // UngroupButton
+            // 
+            this.UngroupButton.Location = new System.Drawing.Point(740, 3);
+            this.UngroupButton.Name = "UngroupButton";
+            this.UngroupButton.Size = new System.Drawing.Size(75, 23);
+            this.UngroupButton.TabIndex = 7;
+            this.UngroupButton.Text = "UnGroup";
+            this.UngroupButton.UseVisualStyleBackColor = true;
+            this.UngroupButton.Click += new System.EventHandler(this.UngroupButton_Click);
+            // 
             // DrawingApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(680, 532);
+            this.ClientSize = new System.Drawing.Size(846, 532);
             this.Controls.Add(this.panel1);
             this.Name = "DrawingApp";
             this.Text = "DrawingApplication";
@@ -146,6 +170,8 @@
         private System.Windows.Forms.Button load_button;
         private System.Windows.Forms.Button redo_button;
         private System.Windows.Forms.Button undo_button;
+        private System.Windows.Forms.Button UngroupButton;
+        private System.Windows.Forms.Button GroupButton;
     }
 }
 
