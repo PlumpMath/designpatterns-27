@@ -7,18 +7,40 @@ using System.Threading.Tasks;
 
 namespace DrawingApp
 {
-    class Shape : ShapeComponent
+    class Shape : GroupComponent
     {
         //A shape class can store all the information. And it will be added to teh shapequeue once it is created.
-        public Shape(string Type, Color BackgroundColor, int PositionX, int PositionY, int SizeX, int SizeY, bool isSelected)
-            : base(Type, BackgroundColor, PositionX, PositionY, SizeX, SizeY, isSelected)
+        public String type { get; set; }
+        public Color back_color { get; set; }
+        public int pos_x { get; set; }
+        public int pos_y { get; set; }
+        public int size_x { get; set; }
+        public int size_y { get; set; }
+        public bool is_selected { get; set; }
+        public Shape(String Type, Color BackgroundColor, int PositionX, int PositionY, int SizeX, int SizeY, bool isSelected) : base(Type)
         {
-
+            type = Type;
+            back_color = BackgroundColor;
+            pos_x = PositionX;
+            pos_y = PositionY;
+            size_x = SizeX;
+            size_y = SizeY;
+            is_selected = isSelected;
         }
 
-        public override void GetGroupedShapes(int index)
+        public override void Add(GroupComponent c)
         {
-            base.GetGroupedShapes(index);
+            Console.WriteLine("Cannot add to a leaf");
+        }
+
+        public override void Remove(GroupComponent c)
+        {
+            Console.WriteLine("Cannot remove from a leaf");
+        }
+
+        public override void Display(int depth)
+        {
+            Console.WriteLine(new String(' ', depth) + name);
         }
     }
 }

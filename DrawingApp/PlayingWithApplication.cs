@@ -30,7 +30,7 @@ namespace DrawingApp
             modebox.SelectedIndex = 0;
             //Create a new window
             mainWindow = new DrawingWindow();
-            
+
         }
         abstract class UndoableCommand
         {
@@ -39,14 +39,14 @@ namespace DrawingApp
         }
         class MoveShapeCommand : UndoableCommand
         {
-            private ShapeComposite shape;
+            private Shape shape;
             private Controller controller;
             private int old_pos_x;
             private int old_pos_y;
             private int new_pos_x;
             private int new_pos_y;
 
-            public MoveShapeCommand(Controller controller, ShapeComposite shape, int new_x_pos, int new_y_pos)
+            public MoveShapeCommand(Controller controller, Shape shape, int new_x_pos, int new_y_pos)
             {
                 this.controller = controller;
                 this.shape = shape;
@@ -58,24 +58,26 @@ namespace DrawingApp
             {
                 old_pos_x = shape.pos_x;
                 old_pos_y = shape.pos_y;
-                shape.SetPosition(new_pos_x, new_pos_y);
+                shape.pos_x = new_pos_x;
+                shape.pos_y = new_pos_y;
             }
 
             public override void UnExecute()
             {
-                shape.SetPosition(old_pos_x, old_pos_y);
+                shape.pos_x = old_pos_x;
+                shape.pos_y = old_pos_y;
             }
         }
         class ResizeShapeCommand : UndoableCommand
         {
-            private ShapeComposite shape;
+            private Shape shape;
             private Controller controller;
             private int old_size_x;
             private int old_size_y;
             private int new_size_x;
             private int new_size_y;
 
-            public ResizeShapeCommand(Controller controller, ShapeComposite shape, int new_x_size, int new_y_size)
+            public ResizeShapeCommand(Controller controller, Shape shape, int new_x_size, int new_y_size)
             {
                 this.controller = controller;
                 this.shape = shape;
@@ -87,21 +89,23 @@ namespace DrawingApp
             {
                 old_size_x = shape.size_x;
                 old_size_y = shape.size_y;
-                shape.SetPosition(new_size_x, new_size_y);
+                shape.size_x = new_size_x;
+                shape.size_y = new_size_y;
             }
 
             public override void UnExecute()
             {
-                shape.SetSize(old_size_x, old_size_y);
+                shape.size_x = old_size_x;
+                shape.size_y = old_size_y;
             }
         }
         class AddShapeCommand : UndoableCommand
         {
-            private ShapeComposite shape;
+            private Shape shape;
             private Controller controller;
 
             // Constructor
-            public AddShapeCommand(Controller controller, ShapeComposite shape)
+            public AddShapeCommand(Controller controller, Shape shape)
             {
                 this.shape = shape;
                 this.controller = controller;
@@ -117,7 +121,7 @@ namespace DrawingApp
             public override void UnExecute()
             {
                 controller.RemoveShape(shape);
-                
+
             }
         }
         class SaveCommand
@@ -129,7 +133,7 @@ namespace DrawingApp
             {
                 this.controller = controller;
             }
-            public void Execute(List<ShapeComposite> shapeList)
+            public void Execute(List<Shape> shapeList)
             {
                 controller.SaveToFile(shapeList);
             }
@@ -148,22 +152,22 @@ namespace DrawingApp
         }
         class Controller
         {
-            private List<ShapeComposite> shapeList = new List<ShapeComposite>();
+            private List<Shape> shapeList = new List<Shape>();
 
-            public List<ShapeComposite> GetShapes()
+            public List<Shape> GetShapes()
             {
                 return shapeList;
             }
 
-            public void AddShape(ShapeComposite shape)
+            public void AddShape(Shape shape)
             {
                 shapeList.Add(shape);
             }
-            public void RemoveShape(ShapeComposite shape)
+            public void RemoveShape(Shape shape)
             {
                 shapeList.Remove(shape);
             }
-            public void SaveToFile(List<ShapeComposite> shapeList)
+            public void SaveToFile(List<Shape> shapeList)
             {
                 SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
@@ -178,7 +182,7 @@ namespace DrawingApp
                     using (StreamWriter writer = new StreamWriter(saveFileDialog1.OpenFile()))
                     {
 
-                        foreach (ShapeComposite shape in shapeList)
+                        foreach (Shape shape in shapeList)
                         {
                             //Only the important info is saved. Not the color. Unnessesary.
                             writer.WriteLine(shape.type + " " + shape.pos_x + " " + shape.pos_y + " " + shape.size_x + " " + shape.size_y);
@@ -202,14 +206,14 @@ namespace DrawingApp
                         {
                             Color randomColor = Color.FromArgb(Random.Next(255), Random.Next(255), Random.Next(255));
                             string[] newline = reader.ReadLine().Split(' ');
-                            ShapeComposite newshape = new ShapeComposite(newline[0], randomColor, Convert.ToInt32(newline[1]), Convert.ToInt32(newline[2]), Convert.ToInt32(newline[3]), Convert.ToInt32(newline[4]), false);
+                            Shape newshape = new Shape(newline[0], randomColor, Convert.ToInt32(newline[1]), Convert.ToInt32(newline[2]), Convert.ToInt32(newline[3]), Convert.ToInt32(newline[4]), false);
                             AddShapeCommand newcommand = new AddShapeCommand(controller, newshape);
                             returnstack.Push(newcommand);
                             //Every command needs to be executed to add the shapes to the screen.
                             //So even adding shapes by loading is undoable.
                             newcommand.Execute();
                         }
-                        
+
                         return returnstack;
                     }
                 }
@@ -227,7 +231,7 @@ namespace DrawingApp
             {
                 return commandstack;
             }
-            public List<ShapeComposite> GetShapes()
+            public List<Shape> GetShapes()
             {
                 return controller.GetShapes();
             }
@@ -252,15 +256,15 @@ namespace DrawingApp
                     redocommandstack.Push(command);
                 }
             }
-            public void AddShape(ShapeComposite shape)
+            public void AddShape(Shape shape)
             {
                 // Create command operation and execute it
-                UndoableCommand command = new AddShapeCommand(controller,shape);
+                UndoableCommand command = new AddShapeCommand(controller, shape);
                 command.Execute();
                 // Add command to command stack
                 commandstack.Push(command);
             }
-            public void MoveShape(ShapeComposite shape, int new_x_pos, int new_y_pos)
+            public void MoveShape(Shape shape, int new_x_pos, int new_y_pos)
             {
                 // Create command operation and execute it
                 UndoableCommand command = new MoveShapeCommand(controller, shape, new_x_pos, new_y_pos);
@@ -268,7 +272,7 @@ namespace DrawingApp
                 // Add command to command stack
                 commandstack.Push(command);
             }
-            public void ResizeShape(ShapeComposite shape, int new_x_size, int new_y_size)
+            public void ResizeShape(Shape shape, int new_x_size, int new_y_size)
             {
                 // Create command operation and execute it
                 UndoableCommand command = new ResizeShapeCommand(controller, shape, new_x_size, new_y_size);
@@ -276,7 +280,7 @@ namespace DrawingApp
                 // Add command to command stack
                 commandstack.Push(command);
             }
-            public void Save(List<ShapeComposite> shapeList)
+            public void Save(List<Shape> shapeList)
             {
                 SaveCommand command = new SaveCommand(controller);
                 command.Execute(shapeList);
@@ -324,11 +328,11 @@ namespace DrawingApp
             //This is the code to select a shape while Move or Resize is selected.
             if (mode == "Move" | mode == "Resize")
             {
-                foreach (ShapeComposite currentShape in this.mainWindow.GetShapes())
+                foreach (Shape currentShape in this.mainWindow.GetShapes())
                 {
                     if (new Rectangle(currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y).Contains(initialMousePos))
                     {
-                        currentShape.SetSelected(!currentShape.is_selected);
+                        currentShape.is_selected = !currentShape.is_selected;
                         //Make sure to break or else all the underlaying shapes will also be selected.
                         break;
                     }
@@ -349,45 +353,45 @@ namespace DrawingApp
                         if (mode == "Create Rectangle")
                         {
                             //To not have any negative numbers some of the variables need to be multiplied by -1.
-                            mainWindow.AddShape(new ShapeComposite("Rectangle", randomColor, mouse_pos.X, initialMousePos.Y, size_x * -1, size_y, false));
+                            mainWindow.AddShape(new Shape("Rectangle", randomColor, mouse_pos.X, initialMousePos.Y, size_x * -1, size_y, false));
                         }
                         else if (mode == "Create Ellipse")
                         {
                             //This will execute the AddShape command
-                            mainWindow.AddShape(new ShapeComposite("Ellipse", randomColor, mouse_pos.X, initialMousePos.Y, size_x * -1, size_y, false));
+                            mainWindow.AddShape(new Shape("Ellipse", randomColor, mouse_pos.X, initialMousePos.Y, size_x * -1, size_y, false));
                         }
                     }
                     else if (size_x > 0 && size_y < 0)
                     {
                         if (mode == "Create Rectangle")
                         {
-                            mainWindow.AddShape(new ShapeComposite("Rectangle", randomColor, initialMousePos.X, mouse_pos.Y, size_x, size_y * -1, false));
+                            mainWindow.AddShape(new Shape("Rectangle", randomColor, initialMousePos.X, mouse_pos.Y, size_x, size_y * -1, false));
                         }
                         else if (mode == "Create Ellipse")
                         {
-                            mainWindow.AddShape(new ShapeComposite("Ellipse", randomColor, initialMousePos.X, mouse_pos.Y, size_x, size_y * -1, false));
+                            mainWindow.AddShape(new Shape("Ellipse", randomColor, initialMousePos.X, mouse_pos.Y, size_x, size_y * -1, false));
                         }
                     }
                     else if (size_x < 0 && size_y < 0)
                     {
                         if (mode == "Create Rectangle")
                         {
-                            mainWindow.AddShape(new ShapeComposite("Rectangle", randomColor, mouse_pos.X, mouse_pos.Y, size_x * -1, size_y * -1, false));
+                            mainWindow.AddShape(new Shape("Rectangle", randomColor, mouse_pos.X, mouse_pos.Y, size_x * -1, size_y * -1, false));
                         }
                         else if (mode == "Create Ellipse")
                         {
-                            mainWindow.AddShape(new ShapeComposite("Ellipse", randomColor, mouse_pos.X, mouse_pos.Y, size_x * -1, size_y * -1, false));
+                            mainWindow.AddShape(new Shape("Ellipse", randomColor, mouse_pos.X, mouse_pos.Y, size_x * -1, size_y * -1, false));
                         }
                     }
                     else
                     {
                         if (mode == "Create Rectangle")
                         {
-                            mainWindow.AddShape(new ShapeComposite("Rectangle", randomColor, initialMousePos.X, initialMousePos.Y, size_x, size_y, false));
+                            mainWindow.AddShape(new Shape("Rectangle", randomColor, initialMousePos.X, initialMousePos.Y, size_x, size_y, false));
                         }
                         else if (mode == "Create Ellipse")
                         {
-                            mainWindow.AddShape(new ShapeComposite("Ellipse", randomColor, initialMousePos.X, initialMousePos.Y, size_x, size_y, false));
+                            mainWindow.AddShape(new Shape("Ellipse", randomColor, initialMousePos.X, initialMousePos.Y, size_x, size_y, false));
                         }
                     }
                     outline = null;
@@ -401,8 +405,8 @@ namespace DrawingApp
         {
             Graphics g = e.Graphics;
             //While painting the app needs to redraw every shape in the shapequeue.
-            List<ShapeComposite> allShapes = this.mainWindow.GetShapes();
-            foreach (ShapeComposite currentShape in allShapes)
+            List<Shape> allShapes = this.mainWindow.GetShapes();
+            foreach (Shape currentShape in allShapes)
             {
                 SolidBrush brush = new SolidBrush(currentShape.back_color);
                 if (currentShape.type == "Rectangle")
@@ -422,7 +426,7 @@ namespace DrawingApp
                     }
                 }
             }
-            
+
             //And an outline needs to be drawn as well to show a new shape is being created.
             if (outline != null)
             {
@@ -447,7 +451,7 @@ namespace DrawingApp
                 int size_y = mouse_pos.Y - initialMousePos.Y;
                 if (mode == "Move")
                 {
-                    foreach (ShapeComposite current_shape in this.mainWindow.GetShapes())
+                    foreach (Shape current_shape in this.mainWindow.GetShapes())
                     {
                         if (current_shape.is_selected)
                         {
@@ -459,7 +463,7 @@ namespace DrawingApp
                 }
                 if (mode == "Resize")
                 {
-                    foreach (ShapeComposite current_shape in this.mainWindow.GetShapes())
+                    foreach (Shape current_shape in this.mainWindow.GetShapes())
                     {
                         if (current_shape.is_selected)
                         {
@@ -520,7 +524,7 @@ namespace DrawingApp
                     }
                     this.Refresh();
                 }
-            }   
+            }
         }
         private void modebox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -528,9 +532,9 @@ namespace DrawingApp
             ComboBox comboBox = (ComboBox)sender;
             if (mode != (string)comboBox.SelectedItem)
             {
-                foreach (ShapeComposite currentshape in this.mainWindow.GetShapes())
+                foreach (Shape currentshape in this.mainWindow.GetShapes())
                 {
-                    currentshape.SetSelected(false);
+                    currentshape.is_selected = false;
                 }
                 this.Refresh();
             }
@@ -545,7 +549,7 @@ namespace DrawingApp
             {
                 if (mode == "Move")
                 {
-                    foreach (ShapeComposite currentShape in this.mainWindow.GetShapes())
+                    foreach (Shape currentShape in this.mainWindow.GetShapes())
                     {
                         if (currentShape.is_selected)
                         {
@@ -555,7 +559,7 @@ namespace DrawingApp
                 }
                 else if (mode == "Resize")
                 {
-                    foreach (ShapeComposite currentShape in this.mainWindow.GetShapes())
+                    foreach (Shape currentShape in this.mainWindow.GetShapes())
                     {
                         if (currentShape.is_selected)
                         {
@@ -570,7 +574,15 @@ namespace DrawingApp
 
         private void GroupButton_Click(object sender, EventArgs e)
         {
-
+            GroupComposite group1 = new GroupComposite("Group1");
+            foreach (Shape currentShape in this.mainWindow.GetShapes())
+            {
+                if (currentShape.is_selected)
+                {
+                    group1.Add(currentShape);
+                }
+            }
+            group1.Display(1);
         }
 
         private void UngroupButton_Click(object sender, EventArgs e)

@@ -53,8 +53,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shape.cs" />
-    <Compile Include="ShapeComponent.cs" />
-    <Compile Include="ShapeComposite.cs" />
+    <Compile Include="GroupComponent.cs" />
+    <Compile Include="GroupComposite.cs" />
     <EmbeddedResource Include="PlayingWithApplication.resx">
       <DependentUpon>PlayingWithApplication.cs</DependentUpon>
     </EmbeddedResource>
