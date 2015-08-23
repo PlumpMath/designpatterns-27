@@ -35,5 +35,16 @@ namespace DrawingApp
                 component.Display(depth + 2);
             }
         }
+        public override bool ContainsMember(GroupComponent shape)
+        {
+            return shapes.Contains(shape);
+        }
+        public override void ToggleSelected()
+        {
+            foreach (GroupComponent component in shapes)
+            {
+                component.ToggleSelected();
+            }
+        }
     }
 }

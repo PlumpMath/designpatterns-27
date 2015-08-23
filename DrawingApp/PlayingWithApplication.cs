@@ -18,6 +18,7 @@ namespace DrawingApp
         Pen selected_pen = new Pen(Color.Black, 2);
         DrawingWindow mainWindow;
         Shape outline;
+        List<Shape> outlines = new List<Shape>();
         static Random Random = new Random();
         Point initialMousePos;
         bool mouseDown = false;
@@ -153,6 +154,61 @@ namespace DrawingApp
         class Controller
         {
             private List<Shape> shapeList = new List<Shape>();
+            private GroupComposite shapeGroup = new GroupComposite(" ");
+            private List<GroupComposite> groupList = new List<GroupComposite>();
+
+            private Shape lastShape = null;
+            int groupCounter = 0;
+
+            public void GroupShapes(List<Shape> shapesToGroup)
+            {
+                GroupComposite newGroup = new GroupComposite("group " + groupCounter);
+                groupCounter++;
+
+                foreach (Shape shape in shapesToGroup)
+                {
+                    newGroup.Add(shape);
+                }
+                shapeGroup.Add(newGroup);
+                groupList.Add(newGroup);
+
+                shapeGroup.Display(0);
+            }
+
+            public void UnGroupShapes(List<Shape> shapesToUnGroup)
+            {
+                foreach (Shape shape in shapesToUnGroup)
+                {
+                    foreach (GroupComposite composite in groupList)
+                    {
+                        if (composite.ContainsMember(shape))
+                        {
+                            composite.Remove(shape);
+                        }
+                    }
+                }
+                shapeGroup.Display(0);
+            }
+
+            public void ToggleSelect(Shape shape)
+            {
+                GroupComposite groupToSelect = null;
+                foreach (GroupComposite composite in groupList)
+                {
+                    if (composite.ContainsMember(shape))
+                    {
+                        groupToSelect = composite;
+                    }
+                }
+                if (groupToSelect != null)
+                {
+                    groupToSelect.ToggleSelected();
+                }
+                else
+                {
+                    shape.ToggleSelected();
+                }
+            }
 
             public List<Shape> GetShapes()
             {
@@ -162,10 +218,13 @@ namespace DrawingApp
             public void AddShape(Shape shape)
             {
                 shapeList.Add(shape);
+                shapeGroup.Add(shape);
+                shapeGroup.Display(0);
             }
             public void RemoveShape(Shape shape)
             {
                 shapeList.Remove(shape);
+                shapeGroup.Remove(shape);
             }
             public void SaveToFile(List<Shape> shapeList)
             {
@@ -226,6 +285,19 @@ namespace DrawingApp
             private Controller controller = new Controller();
             private Stack<UndoableCommand> commandstack = new Stack<UndoableCommand>();
             private Stack<UndoableCommand> redocommandstack = new Stack<UndoableCommand>();
+
+            public void GroupShapes(List<Shape> shapesToGroup)
+            {
+                controller.GroupShapes(shapesToGroup);
+            }
+            public void UnGroupShapes(List<Shape> shapesToUnGroup)
+            {
+                controller.UnGroupShapes(shapesToUnGroup);
+            }
+            public void ToggleSelect(Shape shape)
+            {
+                controller.ToggleSelect(shape);
+            }
 
             public Stack<UndoableCommand> GetCommandStack()
             {
@@ -332,7 +404,7 @@ namespace DrawingApp
                 {
                     if (new Rectangle(currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y).Contains(initialMousePos))
                     {
-                        currentShape.is_selected = !currentShape.is_selected;
+                        mainWindow.ToggleSelect(currentShape);
                         //Make sure to break or else all the underlaying shapes will also be selected.
                         break;
                     }
@@ -353,45 +425,45 @@ namespace DrawingApp
                         if (mode == "Create Rectangle")
                         {
                             //To not have any negative numbers some of the variables need to be multiplied by -1.
-                            mainWindow.AddShape(new Shape("Rectangle", randomColor, mouse_pos.X, initialMousePos.Y, size_x * -1, size_y, false));
+                            mainWindow.AddShape(new Shape("rectangle", randomColor, mouse_pos.X, initialMousePos.Y, size_x * -1, size_y, false));
                         }
                         else if (mode == "Create Ellipse")
                         {
                             //This will execute the AddShape command
-                            mainWindow.AddShape(new Shape("Ellipse", randomColor, mouse_pos.X, initialMousePos.Y, size_x * -1, size_y, false));
+                            mainWindow.AddShape(new Shape("ellipse", randomColor, mouse_pos.X, initialMousePos.Y, size_x * -1, size_y, false));
                         }
                     }
                     else if (size_x > 0 && size_y < 0)
                     {
                         if (mode == "Create Rectangle")
                         {
-                            mainWindow.AddShape(new Shape("Rectangle", randomColor, initialMousePos.X, mouse_pos.Y, size_x, size_y * -1, false));
+                            mainWindow.AddShape(new Shape("rectangle", randomColor, initialMousePos.X, mouse_pos.Y, size_x, size_y * -1, false));
                         }
                         else if (mode == "Create Ellipse")
                         {
-                            mainWindow.AddShape(new Shape("Ellipse", randomColor, initialMousePos.X, mouse_pos.Y, size_x, size_y * -1, false));
+                            mainWindow.AddShape(new Shape("ellipse", randomColor, initialMousePos.X, mouse_pos.Y, size_x, size_y * -1, false));
                         }
                     }
                     else if (size_x < 0 && size_y < 0)
                     {
                         if (mode == "Create Rectangle")
                         {
-                            mainWindow.AddShape(new Shape("Rectangle", randomColor, mouse_pos.X, mouse_pos.Y, size_x * -1, size_y * -1, false));
+                            mainWindow.AddShape(new Shape("rectangle", randomColor, mouse_pos.X, mouse_pos.Y, size_x * -1, size_y * -1, false));
                         }
                         else if (mode == "Create Ellipse")
                         {
-                            mainWindow.AddShape(new Shape("Ellipse", randomColor, mouse_pos.X, mouse_pos.Y, size_x * -1, size_y * -1, false));
+                            mainWindow.AddShape(new Shape("ellipse", randomColor, mouse_pos.X, mouse_pos.Y, size_x * -1, size_y * -1, false));
                         }
                     }
                     else
                     {
                         if (mode == "Create Rectangle")
                         {
-                            mainWindow.AddShape(new Shape("Rectangle", randomColor, initialMousePos.X, initialMousePos.Y, size_x, size_y, false));
+                            mainWindow.AddShape(new Shape("rectangle", randomColor, initialMousePos.X, initialMousePos.Y, size_x, size_y, false));
                         }
                         else if (mode == "Create Ellipse")
                         {
-                            mainWindow.AddShape(new Shape("Ellipse", randomColor, initialMousePos.X, initialMousePos.Y, size_x, size_y, false));
+                            mainWindow.AddShape(new Shape("ellipse", randomColor, initialMousePos.X, initialMousePos.Y, size_x, size_y, false));
                         }
                     }
                     outline = null;
@@ -409,7 +481,7 @@ namespace DrawingApp
             foreach (Shape currentShape in allShapes)
             {
                 SolidBrush brush = new SolidBrush(currentShape.back_color);
-                if (currentShape.type == "Rectangle")
+                if (currentShape.type == "rectangle")
                 {
                     g.FillRectangle(brush, currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y);
                     if (currentShape.is_selected)
@@ -417,7 +489,7 @@ namespace DrawingApp
                         g.DrawRectangle(selected_pen, currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y);
                     }
                 }
-                else if (currentShape.type == "Ellipse")
+                else if (currentShape.type == "ellipse")
                 {
                     g.FillEllipse(brush, currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y);
                     if (currentShape.is_selected)
@@ -428,17 +500,19 @@ namespace DrawingApp
             }
 
             //And an outline needs to be drawn as well to show a new shape is being created.
-            if (outline != null)
+            foreach (Shape currentOutline in outlines)
             {
-                if (outline.type == "Outline Rectangle")
+                if (currentOutline.type == "Outline rectangle")
                 {
-                    g.DrawRectangle(blackPen, outline.pos_x, outline.pos_y, outline.size_x, outline.size_y);
+                    g.DrawRectangle(blackPen, currentOutline.pos_x, currentOutline.pos_y, currentOutline.size_x, currentOutline.size_y);
                 }
-                else if (outline.type == "Outline Ellipse")
+                else if (outline.type == "Outline ellipse")
                 {
-                    g.DrawEllipse(blackPen, outline.pos_x, outline.pos_y, outline.size_x, outline.size_y);
+                    g.DrawEllipse(blackPen, currentOutline.pos_x, currentOutline.pos_y, currentOutline.size_x, currentOutline.size_y);
                 }
             }
+            //Empty the outlines once they've all been drawn.
+            outlines.Clear();
         }
 
         private void DrawingApp_MouseMove(object sender, MouseEventArgs e)
@@ -456,8 +530,8 @@ namespace DrawingApp
                         if (current_shape.is_selected)
                         {
                             //Add an outline to show where the shape will be moved to.
-                            outline = new Shape("Outline " + current_shape.type, Color.Black, mouse_pos.X - current_shape.size_x / 2, mouse_pos.Y - current_shape.size_y / 2, current_shape.size_x, current_shape.size_y, false);
-                            this.Refresh();
+                            Shape newOutline = new Shape("Outline " + current_shape.type, Color.Black, current_shape.pos_x + (mouse_pos.X - initialMousePos.X), current_shape.pos_y + (mouse_pos.Y - initialMousePos.Y), current_shape.size_x, current_shape.size_y, false);
+                            outlines.Add(newOutline);
                         }
                     }
                 }
@@ -468,7 +542,8 @@ namespace DrawingApp
                         if (current_shape.is_selected)
                         {
                             //Change the size of every shape that has the is_selected boolean active.
-                            outline = new Shape("Outline " + current_shape.type, Color.Black, current_shape.pos_x, current_shape.pos_y, mouse_pos.X - current_shape.pos_x, mouse_pos.Y - current_shape.pos_y, false);
+                            Shape newOutline = new Shape("Outline " + current_shape.type, Color.Black, current_shape.pos_x, current_shape.pos_y, mouse_pos.X - current_shape.pos_x, mouse_pos.Y - current_shape.pos_y, false);
+                            outlines.Add(newOutline);
                             this.Refresh();
                         }
                     }
@@ -477,50 +552,55 @@ namespace DrawingApp
                 {
                     label1.Text = "Coordinates: " + this.PointToClient(Cursor.Position).X + "x" + this.PointToClient(Cursor.Position).Y;
                     //Every posible direction to draw a new shape is handled here. 
+                    Shape newOutline = null;
                     if (size_x < 0 && size_y > 0)
                     {
                         if (mode == "Create Rectangle")
                         {
                             //Just the outline rectangle is drawn first
-                            outline = new Shape("Outline Rectangle", Color.Black, mouse_pos.X, initialMousePos.Y, size_x * -1, size_y, false);
+                            newOutline = new Shape("Outline rectangle", Color.Black, mouse_pos.X, initialMousePos.Y, size_x * -1, size_y, false);
                         }
                         else if (mode == "Create Ellipse")
                         {
-                            outline = new Shape("Outline Ellipse", Color.Black, mouse_pos.X, initialMousePos.Y, size_x * -1, size_y, false);
+                            newOutline = new Shape("Outline ellipse", Color.Black, mouse_pos.X, initialMousePos.Y, size_x * -1, size_y, false);
                         }
                     }
                     else if (size_x > 0 && size_y < 0)
                     {
                         if (mode == "Create Rectangle")
                         {
-                            outline = new Shape("Outline Rectangle", Color.Black, initialMousePos.X, mouse_pos.Y, size_x, size_y * -1, false);
+                            newOutline = new Shape("Outline rectangle", Color.Black, initialMousePos.X, mouse_pos.Y, size_x, size_y * -1, false);
                         }
                         else if (mode == "Create Ellipse")
                         {
-                            outline = new Shape("Outline Ellipse", Color.Black, initialMousePos.X, mouse_pos.Y, size_x, size_y * -1, false);
+                            newOutline = new Shape("Outline ellipse", Color.Black, initialMousePos.X, mouse_pos.Y, size_x, size_y * -1, false);
                         }
                     }
                     else if (size_x < 0 && size_y < 0)
                     {
                         if (mode == "Create Rectangle")
                         {
-                            outline = new Shape("Outline Rectangle", Color.Black, mouse_pos.X, mouse_pos.Y, size_x * -1, size_y * -1, false);
+                            newOutline = new Shape("Outline rectangle", Color.Black, mouse_pos.X, mouse_pos.Y, size_x * -1, size_y * -1, false);
                         }
                         else if (mode == "Create Ellipse")
                         {
-                            outline = new Shape("Outline Ellipse", Color.Black, mouse_pos.X, mouse_pos.Y, size_x * -1, size_y * -1, false);
+                            newOutline = new Shape("Outline ellipse", Color.Black, mouse_pos.X, mouse_pos.Y, size_x * -1, size_y * -1, false);
                         }
                     }
                     else
                     {
                         if (mode == "Create Rectangle")
                         {
-                            outline = new Shape("Outline Rectangle", Color.Black, initialMousePos.X, initialMousePos.Y, size_x, size_y, false);
+                            newOutline = new Shape("Outline rectangle", Color.Black, initialMousePos.X, initialMousePos.Y, size_x, size_y, false);
                         }
                         else if (mode == "Create Ellipse")
                         {
-                            outline = new Shape("Outline Ellipse", Color.Black, initialMousePos.X, initialMousePos.Y, size_x, size_y, false);
+                            newOutline = new Shape("Outline ellipse", Color.Black, initialMousePos.X, initialMousePos.Y, size_x, size_y, false);
                         }
+                    }
+                    if (newOutline != null)
+                    {
+                        outlines.Add(newOutline);
                     }
                     this.Refresh();
                 }
@@ -553,7 +633,7 @@ namespace DrawingApp
                     {
                         if (currentShape.is_selected)
                         {
-                            mainWindow.MoveShape(currentShape, finalMousePos.X - currentShape.size_x / 2, finalMousePos.Y - currentShape.size_y / 2);
+                            mainWindow.MoveShape(currentShape, currentShape.pos_x + (finalMousePos.X - initialMousePos.X), currentShape.pos_y + (finalMousePos.Y - initialMousePos.Y));
                         }
                     }
                 }
@@ -574,20 +654,28 @@ namespace DrawingApp
 
         private void GroupButton_Click(object sender, EventArgs e)
         {
-            GroupComposite group1 = new GroupComposite("Group1");
+            List<Shape> shapesToGroup = new List<Shape>();
             foreach (Shape currentShape in this.mainWindow.GetShapes())
             {
                 if (currentShape.is_selected)
                 {
-                    group1.Add(currentShape);
+                    shapesToGroup.Add(currentShape);
                 }
             }
-            group1.Display(1);
+            mainWindow.GroupShapes(shapesToGroup);
         }
 
         private void UngroupButton_Click(object sender, EventArgs e)
         {
-
+            List<Shape> shapesToUnGroup = new List<Shape>();
+            foreach (Shape currentShape in this.mainWindow.GetShapes())
+            {
+                if (currentShape.is_selected)
+                {
+                    shapesToUnGroup.Add(currentShape);
+                }
+            }
+            mainWindow.UnGroupShapes(shapesToUnGroup);
         }
     }
 }

@@ -40,7 +40,15 @@ namespace DrawingApp
 
         public override void Display(int depth)
         {
-            Console.WriteLine(new String(' ', depth) + name);
+            Console.WriteLine(new String(' ', depth) + name + ' ' + pos_x + ' ' + pos_y + ' ' + size_x + ' ' + size_y);
+        }
+        public override bool ContainsMember(GroupComponent shape)
+        {
+            return false;
+        }
+        public override void ToggleSelected()
+        {
+            is_selected = !is_selected;
         }
     }
 }

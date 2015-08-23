@@ -17,5 +17,7 @@ namespace DrawingApp
         public abstract void Add(GroupComponent c);
         public abstract void Remove(GroupComponent c);
         public abstract void Display(int depth);
+        public abstract bool ContainsMember(GroupComponent shape);
+        public abstract void ToggleSelected();
     }
 }
