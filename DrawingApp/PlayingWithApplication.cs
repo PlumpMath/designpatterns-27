@@ -162,32 +162,55 @@ namespace DrawingApp
 
             public void GroupShapes(List<Shape> shapesToGroup)
             {
+                List<GroupComponent> itemsToGroup = new List<GroupComponent>();
                 GroupComposite newGroup = new GroupComposite("group " + groupCounter);
                 groupCounter++;
 
-                foreach (Shape shape in shapesToGroup)
+                foreach (Shape currentShape in shapesToGroup)
                 {
-                    newGroup.Add(shape);
+                    bool foundGroup = false;
+                    foreach (GroupComposite currentGroup in groupList)
+                    {
+                        if (currentGroup.ContainsMember(currentShape))
+                        {
+                            foundGroup = true;
+                            if (!itemsToGroup.Contains(currentGroup))
+                            {
+                                shapeGroup.Remove(currentGroup);
+                                itemsToGroup.Add(currentGroup);
+                            }
+                        }
+                    }
+                    if (foundGroup == false)
+                    {
+                        shapeGroup.Remove(currentShape);
+                        itemsToGroup.Add(currentShape);
+                    }
                 }
+
+                //Now that every group and ungrouped shape has been found it can be added to the new group.
+                foreach (GroupComponent currentComponent in itemsToGroup)
+                {
+                    newGroup.Add(currentComponent);
+                }
+
                 shapeGroup.Add(newGroup);
                 groupList.Add(newGroup);
 
                 shapeGroup.Display(0);
+                Console.WriteLine("-----------");
             }
 
             public void UnGroupShapes(List<Shape> shapesToUnGroup)
             {
+                shapeGroup = new GroupComposite(" ");
                 foreach (Shape shape in shapesToUnGroup)
                 {
-                    foreach (GroupComposite composite in groupList)
-                    {
-                        if (composite.ContainsMember(shape))
-                        {
-                            composite.Remove(shape);
-                        }
-                    }
+                    shapeGroup.Add(shape);
                 }
+                groupList.Clear();
                 shapeGroup.Display(0);
+                Console.WriteLine("-----------");
             }
 
             public void ToggleSelect(Shape shape)
@@ -213,6 +236,11 @@ namespace DrawingApp
             public List<Shape> GetShapes()
             {
                 return shapeList;
+            }
+
+            public List<GroupComposite> GetGroups()
+            {
+                return groupList;
             }
 
             public void AddShape(Shape shape)
@@ -306,6 +334,10 @@ namespace DrawingApp
             public List<Shape> GetShapes()
             {
                 return controller.GetShapes();
+            }
+            public List<GroupComposite> GetGroups()
+            {
+                return controller.GetGroups();
             }
 
             public void Redo()
@@ -404,7 +436,19 @@ namespace DrawingApp
                 {
                     if (new Rectangle(currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y).Contains(initialMousePos))
                     {
-                        mainWindow.ToggleSelect(currentShape);
+                        bool found = false;
+                        foreach (GroupComposite currentGroup in this.mainWindow.GetGroups())
+                        {
+                            if (currentGroup.ContainsMember(currentShape))
+                            {
+                                found = true;
+                                currentGroup.ToggleSelected();
+                            }
+                        }
+                        if (found == false)
+                        {
+                            mainWindow.ToggleSelect(currentShape);
+                        }
                         //Make sure to break or else all the underlaying shapes will also be selected.
                         break;
                     }

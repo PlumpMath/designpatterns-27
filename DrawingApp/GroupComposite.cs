@@ -46,5 +46,20 @@ namespace DrawingApp
                 component.ToggleSelected();
             }
         }
+        public override bool isSelected()
+        {
+            bool selected = false;
+            foreach (Shape currentShape in shapes)
+            {
+                if (currentShape.is_selected)
+                {
+                    selected = true;
+                }
+            }
+            return selected;
+        }
+        public override int Size(){
+            return shapes.Count();
+        }
     }
 }

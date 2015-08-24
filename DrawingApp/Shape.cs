@@ -50,5 +50,13 @@ namespace DrawingApp
         {
             is_selected = !is_selected;
         }
+        public override bool isSelected()
+        {
+            return false;
+        }
+        public override int Size()
+        {
+            return 0;
+        }
     }
 }
