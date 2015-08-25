@@ -18,8 +18,13 @@ namespace DrawingApp
         public abstract void Remove(GroupComponent c);
         public abstract void Display(int depth);
         public abstract bool ContainsMember(GroupComponent shape);
+        public abstract List<GroupComponent> UnGroup();
         public abstract void ToggleSelected();
         public abstract bool isSelected();
         public abstract int Size();
+        public abstract int GetMaxX();
+        public abstract int GetMaxY();
+        public abstract int GetMinX();
+        public abstract int GetMinY();
     }
 }

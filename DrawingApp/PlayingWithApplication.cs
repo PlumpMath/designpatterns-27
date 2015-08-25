@@ -155,68 +155,52 @@ namespace DrawingApp
         {
             private List<Shape> shapeList = new List<Shape>();
             private GroupComposite shapeGroup = new GroupComposite(" ");
-            private List<GroupComposite> groupList = new List<GroupComposite>();
+            private List<GroupComponent> groupList = new List<GroupComponent>();
 
             private Shape lastShape = null;
             int groupCounter = 0;
 
-            public void GroupShapes(List<Shape> shapesToGroup)
+            public void GroupShapes(List<GroupComponent> shapesToGroup)
             {
-                List<GroupComponent> itemsToGroup = new List<GroupComponent>();
                 GroupComposite newGroup = new GroupComposite("group " + groupCounter);
                 groupCounter++;
 
-                foreach (Shape currentShape in shapesToGroup)
+                foreach (GroupComponent currentShape in shapesToGroup)
                 {
-                    bool foundGroup = false;
-                    foreach (GroupComposite currentGroup in groupList)
-                    {
-                        if (currentGroup.ContainsMember(currentShape))
-                        {
-                            foundGroup = true;
-                            if (!itemsToGroup.Contains(currentGroup))
-                            {
-                                shapeGroup.Remove(currentGroup);
-                                itemsToGroup.Add(currentGroup);
-                            }
-                        }
-                    }
-                    if (foundGroup == false)
-                    {
-                        shapeGroup.Remove(currentShape);
-                        itemsToGroup.Add(currentShape);
-                    }
+                    groupList.Remove(currentShape);
+                    newGroup.Add(currentShape);
                 }
-
-                //Now that every group and ungrouped shape has been found it can be added to the new group.
-                foreach (GroupComponent currentComponent in itemsToGroup)
-                {
-                    newGroup.Add(currentComponent);
-                }
-
-                shapeGroup.Add(newGroup);
                 groupList.Add(newGroup);
 
-                shapeGroup.Display(0);
+                foreach (GroupComponent currentShape in groupList)
+                {
+                    currentShape.Display(0);
+                }
                 Console.WriteLine("-----------");
             }
 
-            public void UnGroupShapes(List<Shape> shapesToUnGroup)
+            public void UnGroupShapes(List<GroupComponent> shapesToUnGroup)
             {
-                shapeGroup = new GroupComposite(" ");
-                foreach (Shape shape in shapesToUnGroup)
+                foreach (GroupComponent group in shapesToUnGroup)
                 {
-                    shapeGroup.Add(shape);
+                    //First get all the member of the group
+                    List<GroupComponent> groupMembers = group.UnGroup();
+                    //Next remove the old group from the list
+                    groupList.Remove(group);
+                    foreach (GroupComponent groupMember in groupMembers)
+                    {
+                        //Now put the member back in the list.
+                        groupList.Add(groupMember);
+                    }
                 }
-                groupList.Clear();
                 shapeGroup.Display(0);
                 Console.WriteLine("-----------");
             }
 
             public void ToggleSelect(Shape shape)
             {
-                GroupComposite groupToSelect = null;
-                foreach (GroupComposite composite in groupList)
+                GroupComponent groupToSelect = null;
+                foreach (GroupComponent composite in groupList)
                 {
                     if (composite.ContainsMember(shape))
                     {
@@ -238,13 +222,14 @@ namespace DrawingApp
                 return shapeList;
             }
 
-            public List<GroupComposite> GetGroups()
+            public List<GroupComponent> GetGroups()
             {
                 return groupList;
             }
 
             public void AddShape(Shape shape)
             {
+                groupList.Add(shape);
                 shapeList.Add(shape);
                 shapeGroup.Add(shape);
                 shapeGroup.Display(0);
@@ -314,11 +299,11 @@ namespace DrawingApp
             private Stack<UndoableCommand> commandstack = new Stack<UndoableCommand>();
             private Stack<UndoableCommand> redocommandstack = new Stack<UndoableCommand>();
 
-            public void GroupShapes(List<Shape> shapesToGroup)
+            public void GroupShapes(List<GroupComponent> shapesToGroup)
             {
                 controller.GroupShapes(shapesToGroup);
             }
-            public void UnGroupShapes(List<Shape> shapesToUnGroup)
+            public void UnGroupShapes(List<GroupComponent> shapesToUnGroup)
             {
                 controller.UnGroupShapes(shapesToUnGroup);
             }
@@ -335,7 +320,7 @@ namespace DrawingApp
             {
                 return controller.GetShapes();
             }
-            public List<GroupComposite> GetGroups()
+            public List<GroupComponent> GetGroups()
             {
                 return controller.GetGroups();
             }
@@ -432,24 +417,12 @@ namespace DrawingApp
             //This is the code to select a shape while Move or Resize is selected.
             if (mode == "Move" | mode == "Resize")
             {
-                foreach (Shape currentShape in this.mainWindow.GetShapes())
+                foreach (GroupComponent currentShape in this.mainWindow.GetGroups())
                 {
-                    if (new Rectangle(currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y).Contains(initialMousePos))
+                    Rectangle tempShape = new Rectangle(currentShape.GetMinX(), currentShape.GetMinY(), currentShape.GetMaxX() - currentShape.GetMinX(), currentShape.GetMaxY() - currentShape.GetMinY());
+                    if (tempShape.Contains(initialMousePos))
                     {
-                        bool found = false;
-                        foreach (GroupComposite currentGroup in this.mainWindow.GetGroups())
-                        {
-                            if (currentGroup.ContainsMember(currentShape))
-                            {
-                                found = true;
-                                currentGroup.ToggleSelected();
-                            }
-                        }
-                        if (found == false)
-                        {
-                            mainWindow.ToggleSelect(currentShape);
-                        }
-                        //Make sure to break or else all the underlaying shapes will also be selected.
+                        currentShape.ToggleSelected();
                         break;
                     }
                 }
@@ -530,7 +503,7 @@ namespace DrawingApp
                     g.FillRectangle(brush, currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y);
                     if (currentShape.is_selected)
                     {
-                        g.DrawRectangle(selected_pen, currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y);
+                        //g.DrawRectangle(selected_pen, currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y);
                     }
                 }
                 else if (currentShape.type == "ellipse")
@@ -538,8 +511,16 @@ namespace DrawingApp
                     g.FillEllipse(brush, currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y);
                     if (currentShape.is_selected)
                     {
-                        g.DrawEllipse(selected_pen, currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y);
+                        //g.DrawEllipse(selected_pen, currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y);
                     }
+                }
+            }
+
+            foreach (GroupComponent currentComponent in mainWindow.GetGroups())
+            {
+                if (currentComponent.isSelected())
+                {
+                    g.DrawRectangle(selected_pen, currentComponent.GetMinX(), currentComponent.GetMinY(), currentComponent.GetMaxX() - currentComponent.GetMinX(), currentComponent.GetMaxY() - currentComponent.GetMinY());
                 }
             }
 
@@ -698,28 +679,30 @@ namespace DrawingApp
 
         private void GroupButton_Click(object sender, EventArgs e)
         {
-            List<Shape> shapesToGroup = new List<Shape>();
-            foreach (Shape currentShape in this.mainWindow.GetShapes())
+            List<GroupComponent> shapesToGroup = new List<GroupComponent>();
+            foreach (GroupComponent currentShape in this.mainWindow.GetGroups())
             {
-                if (currentShape.is_selected)
+                if (currentShape.isSelected())
                 {
                     shapesToGroup.Add(currentShape);
                 }
             }
             mainWindow.GroupShapes(shapesToGroup);
+            this.Refresh();
         }
 
         private void UngroupButton_Click(object sender, EventArgs e)
         {
-            List<Shape> shapesToUnGroup = new List<Shape>();
-            foreach (Shape currentShape in this.mainWindow.GetShapes())
+            List<GroupComponent> shapesToUnGroup = new List<GroupComponent>();
+            foreach (GroupComponent currentShape in this.mainWindow.GetGroups())
             {
-                if (currentShape.is_selected)
+                if (currentShape.isSelected())
                 {
                     shapesToUnGroup.Add(currentShape);
                 }
             }
             mainWindow.UnGroupShapes(shapesToUnGroup);
+            this.Refresh();
         }
     }
 }

@@ -37,6 +37,11 @@ namespace DrawingApp
         {
             Console.WriteLine("Cannot remove from a leaf");
         }
+        public override List<GroupComponent> UnGroup()
+        {
+            Console.WriteLine("Cannot ungroup a leaf");
+            return null;
+        }
 
         public override void Display(int depth)
         {
@@ -52,11 +57,28 @@ namespace DrawingApp
         }
         public override bool isSelected()
         {
-            return false;
+            return is_selected;
         }
         public override int Size()
         {
+            Console.WriteLine("Cannot get the size of a leaf");
             return 0;
+        }
+        public override int GetMaxX()
+        {
+            return pos_x + size_x;
+        }
+        public override int GetMaxY()
+        {
+            return pos_y + size_y;
+        }
+        public override int GetMinX()
+        {
+            return pos_x;
+        }
+        public override int GetMinY()
+        {
+            return pos_y;
         }
     }
 }

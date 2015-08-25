@@ -35,6 +35,10 @@ namespace DrawingApp
                 component.Display(depth + 2);
             }
         }
+        public override List<GroupComponent> UnGroup()
+        {
+            return shapes;
+        }
         public override bool ContainsMember(GroupComponent shape)
         {
             return shapes.Contains(shape);
@@ -49,9 +53,9 @@ namespace DrawingApp
         public override bool isSelected()
         {
             bool selected = false;
-            foreach (Shape currentShape in shapes)
+            foreach (GroupComponent currentShape in shapes)
             {
-                if (currentShape.is_selected)
+                if (currentShape.isSelected())
                 {
                     selected = true;
                 }
@@ -60,6 +64,54 @@ namespace DrawingApp
         }
         public override int Size(){
             return shapes.Count();
+        }
+        public override int GetMaxX()
+        {
+            int maxX = 0;
+            foreach (GroupComponent component in shapes)
+            {
+                if (component.GetMaxX() > maxX)
+                {
+                    maxX = component.GetMaxX();
+                }
+            }
+            return maxX;
+        }
+        public override int GetMaxY()
+        {
+            int maxY = 0;
+            foreach (GroupComponent component in shapes)
+            {
+                if (component.GetMaxY() > maxY)
+                {
+                    maxY = component.GetMaxY();
+                }
+            }
+            return maxY;
+        }
+        public override int GetMinX()
+        {
+            int minX = 10000;
+            foreach (GroupComponent component in shapes)
+            {
+                if (component.GetMinX() < minX)
+                {
+                    minX = component.GetMinX();
+                }
+            }
+            return minX;
+        }
+        public override int GetMinY()
+        {
+            int minY = 10000;
+            foreach (GroupComponent component in shapes)
+            {
+                if (component.GetMinY() < minY)
+                {
+                    minY = component.GetMinY();
+                }
+            }
+            return minY;
         }
     }
 }
