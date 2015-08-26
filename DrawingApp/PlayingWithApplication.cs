@@ -134,9 +134,9 @@ namespace DrawingApp
             {
                 this.controller = controller;
             }
-            public void Execute(List<Shape> shapeList)
+            public void Execute()
             {
-                controller.SaveToFile(shapeList);
+                controller.SaveToFile();
             }
         }
         class LoadCommand
@@ -243,7 +243,7 @@ namespace DrawingApp
             {
                 shapeList.Remove(shape);
             }
-            public void SaveToFile(List<Shape> shapeList)
+            public void SaveToFile()
             {
                 SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
@@ -419,10 +419,10 @@ namespace DrawingApp
                 // Add command to command stack
                 commandstack.Push(command);
             }
-            public void Save(List<Shape> shapeList)
+            public void Save()
             {
                 SaveCommand command = new SaveCommand(controller);
-                command.Execute(shapeList);
+                command.Execute();
             }
             public void Load()
             {
@@ -445,7 +445,7 @@ namespace DrawingApp
 
         private void save_button_Click(object sender, EventArgs e)
         {
-            mainWindow.Save(mainWindow.GetShapes());
+            mainWindow.Save();
             this.Refresh();
         }
 

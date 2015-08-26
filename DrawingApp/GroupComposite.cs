@@ -45,6 +45,7 @@ namespace DrawingApp
         }
         public override List<GroupComponent> UnGroup()
         {
+            //Just return the member since the grouplist in handled in the PlayingWithApplication.cs
             return shapes;
         }
         public override bool ContainsMember(GroupComponent shape)
