@@ -35,6 +35,14 @@ namespace DrawingApp
                 component.Display(depth + 2);
             }
         }
+        public override void WriteToFile(System.IO.StreamWriter writer, int depth)
+        {
+            writer.WriteLine(new String(' ', depth) + name);
+            foreach (GroupComponent component in shapes)
+            {
+                component.WriteToFile(writer, depth + 2);
+            }
+        }
         public override List<GroupComponent> UnGroup()
         {
             return shapes;

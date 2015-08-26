@@ -47,6 +47,10 @@ namespace DrawingApp
         {
             Console.WriteLine(new String(' ', depth) + name + ' ' + pos_x + ' ' + pos_y + ' ' + size_x + ' ' + size_y);
         }
+        public override void WriteToFile(System.IO.StreamWriter writer, int depth)
+        {
+            writer.WriteLine(new String(' ', depth) + name + ' ' + pos_x + ' ' + pos_y + ' ' + size_x + ' ' + size_y);
+        }
         public override bool ContainsMember(GroupComponent shape)
         {
             return false;

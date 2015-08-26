@@ -146,19 +146,25 @@ namespace DrawingApp
             {
                 this.controller = controller;
             }
-            public Stack<UndoableCommand> Execute()
+            public void Execute()
             {
-                return controller.LoadFile(controller);
+                controller.LoadFile();
             }
         }
         class Controller
         {
             private List<Shape> shapeList = new List<Shape>();
-            private GroupComposite shapeGroup = new GroupComposite(" ");
             private List<GroupComponent> groupList = new List<GroupComponent>();
-
-            private Shape lastShape = null;
             int groupCounter = 0;
+
+            public void Display()
+            {
+                foreach (GroupComponent currentShape in groupList)
+                {
+                    currentShape.Display(0);
+                }
+                Console.WriteLine("---------------------------------");
+            }
 
             public void GroupShapes(List<GroupComponent> shapesToGroup)
             {
@@ -167,16 +173,13 @@ namespace DrawingApp
 
                 foreach (GroupComponent currentShape in shapesToGroup)
                 {
+                    //First remove the shape or group from the list or else there are duplicates in the list.
                     groupList.Remove(currentShape);
                     newGroup.Add(currentShape);
                 }
                 groupList.Add(newGroup);
-
-                foreach (GroupComponent currentShape in groupList)
-                {
-                    currentShape.Display(0);
-                }
-                Console.WriteLine("-----------");
+                //Print the groups to show what's changed.
+                Display();
             }
 
             public void UnGroupShapes(List<GroupComponent> shapesToUnGroup)
@@ -186,15 +189,18 @@ namespace DrawingApp
                     //First get all the member of the group
                     List<GroupComponent> groupMembers = group.UnGroup();
                     //Next remove the old group from the list
-                    groupList.Remove(group);
-                    foreach (GroupComponent groupMember in groupMembers)
+                    //But check first if there isn't a leaf that's being ungrouped.
+                    if (groupMembers != null)
                     {
-                        //Now put the member back in the list.
-                        groupList.Add(groupMember);
+                        groupList.Remove(group);
+                        foreach (GroupComponent groupMember in groupMembers)
+                        {
+                            //Now put the member back in the list.
+                            groupList.Add(groupMember);
+                        }
                     }
                 }
-                shapeGroup.Display(0);
-                Console.WriteLine("-----------");
+                Display();
             }
 
             public void ToggleSelect(Shape shape)
@@ -231,13 +237,11 @@ namespace DrawingApp
             {
                 groupList.Add(shape);
                 shapeList.Add(shape);
-                shapeGroup.Add(shape);
-                shapeGroup.Display(0);
+                Display();
             }
             public void RemoveShape(Shape shape)
             {
                 shapeList.Remove(shape);
-                shapeGroup.Remove(shape);
             }
             public void SaveToFile(List<Shape> shapeList)
             {
@@ -254,22 +258,23 @@ namespace DrawingApp
                     using (StreamWriter writer = new StreamWriter(saveFileDialog1.OpenFile()))
                     {
 
-                        foreach (Shape shape in shapeList)
+                        foreach (GroupComponent component in groupList)
                         {
+                            component.WriteToFile(writer, 0);
                             //Only the important info is saved. Not the color. Unnessesary.
-                            writer.WriteLine(shape.type + " " + shape.pos_x + " " + shape.pos_y + " " + shape.size_x + " " + shape.size_y);
                         }
                     }
                 }
             }
-            public Stack<UndoableCommand> LoadFile(Controller controller)
+            public void LoadFile()
             {
                 OpenFileDialog openFielDialog = new OpenFileDialog();
                 openFielDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
                 openFielDialog.FilterIndex = 2;
                 openFielDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 openFielDialog.RestoreDirectory = true;
-                Stack<UndoableCommand> returnstack = new Stack<UndoableCommand>();
+                List<GroupComponent> elements = new List<GroupComponent>();
+                List<Tuple<int,GroupComposite>> proceedingSpaces = new List<Tuple<int,GroupComposite>>();
                 if (openFielDialog.ShowDialog() == DialogResult.OK)
                 {
                     using (StreamReader reader = new StreamReader(openFielDialog.OpenFile()))
@@ -278,18 +283,63 @@ namespace DrawingApp
                         {
                             Color randomColor = Color.FromArgb(Random.Next(255), Random.Next(255), Random.Next(255));
                             string[] newline = reader.ReadLine().Split(' ');
-                            Shape newshape = new Shape(newline[0], randomColor, Convert.ToInt32(newline[1]), Convert.ToInt32(newline[2]), Convert.ToInt32(newline[3]), Convert.ToInt32(newline[4]), false);
-                            AddShapeCommand newcommand = new AddShapeCommand(controller, newshape);
-                            returnstack.Push(newcommand);
-                            //Every command needs to be executed to add the shapes to the screen.
-                            //So even adding shapes by loading is undoable.
-                            newcommand.Execute();
-                        }
 
-                        return returnstack;
+                            int counter = 0;
+                            while (newline[counter] == "")
+                            {
+                                counter++;
+                            }
+                            if (newline[counter] == "group")
+                            {
+                                GroupComposite newGroup = new GroupComposite("group " + newline[counter+1]);
+                                //Increase the groupCounter or else there will be multiple groups called "group 0" for example.
+                                groupCounter++;
+                                proceedingSpaces.Insert(0, new Tuple<int,GroupComposite>(counter, newGroup));
+                                if (counter > 0)
+                                {
+                                    foreach (Tuple<int, GroupComposite> currentGroup in proceedingSpaces)
+                                    {
+                                        if (currentGroup.Item1 < counter)
+                                        {
+                                            currentGroup.Item2.Add(newGroup);
+                                            break;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    elements.Add(newGroup);
+                                }
+                            }
+                            else if (newline[counter] == "rectangle" || newline[counter] == "elipse")
+                            {
+                                Shape newShape = new Shape(newline[counter], randomColor, Convert.ToInt32(newline[counter + 1]), Convert.ToInt32(newline[counter + 2]), Convert.ToInt32(newline[counter + 3]), Convert.ToInt32(newline[counter+4]), false);
+                                shapeList.Add(newShape);
+                                //If there are spaces before the shape it means the shape in one or more groups.
+                                if (counter > 0)
+                                {
+                                    //Find the group that has been last added to the list, and less spaces in front of it.
+                                    //Which means it it higher in the hierarchy.
+                                    foreach (Tuple<int, GroupComposite> currentGroup in proceedingSpaces)
+                                    {
+                                        if (currentGroup.Item1 < counter)
+                                        {
+                                            currentGroup.Item2.Add(newShape);
+                                            //Once the group is found the search stops. The shape only needs to be added to one group.
+                                            break;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    elements.Add(newShape);
+                                }
+                            }
+                        }
                     }
+                    groupList = elements;
+                    Display();
                 }
-                return null;
             }
         }
         class DrawingWindow
@@ -377,7 +427,7 @@ namespace DrawingApp
             public void Load()
             {
                 LoadCommand command = new LoadCommand(controller);
-                commandstack = command.Execute();
+                command.Execute();
             }
 
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ namespace DrawingApp
         public abstract void Remove(GroupComponent c);
         public abstract void Display(int depth);
         public abstract bool ContainsMember(GroupComponent shape);
+        public abstract void WriteToFile(StreamWriter writer, int depth);
         public abstract List<GroupComponent> UnGroup();
         public abstract void ToggleSelected();
         public abstract bool isSelected();
