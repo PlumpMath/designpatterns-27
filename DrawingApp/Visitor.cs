@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DrawingApp
+﻿namespace DrawingApp
 {
     interface Visitor
     {
-        public void visit(MoveObject shapeOrGroup);
-        public void visit(ResizeObject shapeOrGroup);
-        public void visit(WriteToFile shapeOrGroup);
+        //The three possible object types are parsed as a variable.
+        void visit(MoveObject shapeOrGroup);
+        void visit(ResizeObject shapeOrGroup);
+        void visit(WriteToFile shapeOrGroup);
     }
 }

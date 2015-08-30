@@ -25,3 +25,12 @@ C:\Users\Gyrth\Documents\designpatterns\DrawingApp\obj\Debug\DrawingApp.Properti
 C:\Users\Gyrth\Documents\designpatterns\DrawingApp\obj\Debug\DrawingApp.csproj.GenerateResource.Cache
 C:\Users\Gyrth\Documents\designpatterns\DrawingApp\obj\Debug\DrawingApp.exe
 C:\Users\Gyrth\Documents\designpatterns\DrawingApp\obj\Debug\DrawingApp.pdb
+C:\Users\Gyrth\Documents\Projects\DrawingApp\bin\Debug\DrawingApp.exe.config
+C:\Users\Gyrth\Documents\Projects\DrawingApp\obj\Debug\DrawingApp.exe
+C:\Users\Gyrth\Documents\Projects\DrawingApp\obj\Debug\DrawingApp.pdb
+C:\Users\Gyrth\Documents\Projects\DrawingApp\obj\Debug\DrawingApp.csprojResolveAssemblyReference.cache
+C:\Users\Gyrth\Documents\Projects\DrawingApp\obj\Debug\DrawingApp.DrawingApp.resources
+C:\Users\Gyrth\Documents\Projects\DrawingApp\obj\Debug\DrawingApp.Properties.Resources.resources
+C:\Users\Gyrth\Documents\Projects\DrawingApp\obj\Debug\DrawingApp.csproj.GenerateResource.Cache
+C:\Users\Gyrth\Documents\Projects\DrawingApp\bin\Debug\DrawingApp.exe
+C:\Users\Gyrth\Documents\Projects\DrawingApp\bin\Debug\DrawingApp.pdb

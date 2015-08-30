@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 
@@ -33,321 +27,14 @@ namespace DrawingApp
             mainWindow = new DrawingWindow();
 
         }
-        abstract class UndoableCommand
-        {
-            public abstract void Execute();
-            public abstract void UnExecute();
-        }
-        class MoveShapeCommand : UndoableCommand
-        {
-            private Shape shape;
-            private Controller controller;
-            private int old_pos_x;
-            private int old_pos_y;
-            private int new_pos_x;
-            private int new_pos_y;
-
-            public MoveShapeCommand(Controller controller, Shape shape, int new_x_pos, int new_y_pos)
-            {
-                this.controller = controller;
-                this.shape = shape;
-                this.new_pos_x = new_x_pos;
-                this.new_pos_y = new_y_pos;
-            }
-
-            public override void Execute()
-            {
-                old_pos_x = shape.pos_x;
-                old_pos_y = shape.pos_y;
-                shape.pos_x = new_pos_x;
-                shape.pos_y = new_pos_y;
-            }
-
-            public override void UnExecute()
-            {
-                shape.pos_x = old_pos_x;
-                shape.pos_y = old_pos_y;
-            }
-        }
-        class ResizeShapeCommand : UndoableCommand
-        {
-            private Shape shape;
-            private Controller controller;
-            private int old_size_x;
-            private int old_size_y;
-            private int new_size_x;
-            private int new_size_y;
-
-            public ResizeShapeCommand(Controller controller, Shape shape, int new_x_size, int new_y_size)
-            {
-                this.controller = controller;
-                this.shape = shape;
-                this.new_size_x = new_x_size;
-                this.new_size_y = new_y_size;
-            }
-
-            public override void Execute()
-            {
-                old_size_x = shape.size_x;
-                old_size_y = shape.size_y;
-                shape.size_x = new_size_x;
-                shape.size_y = new_size_y;
-            }
-
-            public override void UnExecute()
-            {
-                shape.size_x = old_size_x;
-                shape.size_y = old_size_y;
-            }
-        }
-        class AddShapeCommand : UndoableCommand
-        {
-            private Shape shape;
-            private Controller controller;
-
-            // Constructor
-            public AddShapeCommand(Controller controller, Shape shape)
-            {
-                this.shape = shape;
-                this.controller = controller;
-            }
-
-            // Execute new command
-            public override void Execute()
-            {
-                controller.AddShape(shape);
-            }
-
-            // Unexecute last command
-            public override void UnExecute()
-            {
-                controller.RemoveShape(shape);
-
-            }
-        }
-        class SaveCommand
-        {
-            //The save and load command only have an execute function.
-            //So it doesn't inherit from undoablecommand.
-            private Controller controller;
-            public SaveCommand(Controller controller)
-            {
-                this.controller = controller;
-            }
-            public void Execute()
-            {
-                controller.SaveToFile();
-            }
-        }
-        class LoadCommand
-        {
-            private Controller controller;
-            public LoadCommand(Controller controller)
-            {
-                this.controller = controller;
-            }
-            public void Execute()
-            {
-                controller.LoadFile();
-            }
-        }
-        class Controller
-        {
-            private List<Shape> shapeList = new List<Shape>();
-            private List<GroupComponent> groupList = new List<GroupComponent>();
-            int groupCounter = 0;
-
-            public void Display()
-            {
-                foreach (GroupComponent currentShape in groupList)
-                {
-                    currentShape.Display(0);
-                }
-                Console.WriteLine("---------------------------------");
-            }
-
-            public void GroupShapes(List<GroupComponent> shapesToGroup)
-            {
-                GroupComposite newGroup = new GroupComposite("group " + groupCounter);
-                groupCounter++;
-
-                foreach (GroupComponent currentShape in shapesToGroup)
-                {
-                    //First remove the shape or group from the list or else there are duplicates in the list.
-                    groupList.Remove(currentShape);
-                    newGroup.Add(currentShape);
-                }
-                groupList.Add(newGroup);
-                //Print the groups to show what's changed.
-                Display();
-            }
-
-            public void UnGroupShapes(List<GroupComponent> shapesToUnGroup)
-            {
-                foreach (GroupComponent group in shapesToUnGroup)
-                {
-                    //First get all the member of the group
-                    List<GroupComponent> groupMembers = group.UnGroup();
-                    //Next remove the old group from the list
-                    //But check first if there isn't a leaf that's being ungrouped.
-                    if (groupMembers != null)
-                    {
-                        groupList.Remove(group);
-                        foreach (GroupComponent groupMember in groupMembers)
-                        {
-                            //Now put the member back in the list.
-                            groupList.Add(groupMember);
-                        }
-                    }
-                }
-                Display();
-            }
-
-            public void ToggleSelect(Shape shape)
-            {
-                GroupComponent groupToSelect = null;
-                foreach (GroupComponent composite in groupList)
-                {
-                    if (composite.ContainsMember(shape))
-                    {
-                        groupToSelect = composite;
-                    }
-                }
-                if (groupToSelect != null)
-                {
-                    groupToSelect.ToggleSelected();
-                }
-                else
-                {
-                    shape.ToggleSelected();
-                }
-            }
-
-            public List<Shape> GetShapes()
-            {
-                return shapeList;
-            }
-
-            public List<GroupComponent> GetGroups()
-            {
-                return groupList;
-            }
-
-            public void AddShape(Shape shape)
-            {
-                groupList.Add(shape);
-                shapeList.Add(shape);
-                Display();
-            }
-            public void RemoveShape(Shape shape)
-            {
-                shapeList.Remove(shape);
-            }
-            public void SaveToFile()
-            {
-                SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-
-                saveFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-                saveFileDialog1.FilterIndex = 2;
-                saveFileDialog1.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                saveFileDialog1.RestoreDirectory = true;
-
-
-                if (saveFileDialog1.ShowDialog() == DialogResult.OK)
-                {
-                    using (StreamWriter writer = new StreamWriter(saveFileDialog1.OpenFile()))
-                    {
-
-                        foreach (GroupComponent component in groupList)
-                        {
-                            component.WriteToFile(writer, 0);
-                            //Only the important info is saved. Not the color. Unnessesary.
-                        }
-                    }
-                }
-            }
-            public void LoadFile()
-            {
-                OpenFileDialog openFielDialog = new OpenFileDialog();
-                openFielDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-                openFielDialog.FilterIndex = 2;
-                openFielDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                openFielDialog.RestoreDirectory = true;
-                List<GroupComponent> elements = new List<GroupComponent>();
-                List<Tuple<int,GroupComposite>> proceedingSpaces = new List<Tuple<int,GroupComposite>>();
-                if (openFielDialog.ShowDialog() == DialogResult.OK)
-                {
-                    using (StreamReader reader = new StreamReader(openFielDialog.OpenFile()))
-                    {
-                        while (!reader.EndOfStream)
-                        {
-                            Color randomColor = Color.FromArgb(Random.Next(255), Random.Next(255), Random.Next(255));
-                            string[] newline = reader.ReadLine().Split(' ');
-
-                            int counter = 0;
-                            while (newline[counter] == "")
-                            {
-                                counter++;
-                            }
-                            if (newline[counter] == "group")
-                            {
-                                GroupComposite newGroup = new GroupComposite("group " + newline[counter+1]);
-                                //Increase the groupCounter or else there will be multiple groups called "group 0" for example.
-                                groupCounter++;
-                                proceedingSpaces.Insert(0, new Tuple<int,GroupComposite>(counter, newGroup));
-                                if (counter > 0)
-                                {
-                                    foreach (Tuple<int, GroupComposite> currentGroup in proceedingSpaces)
-                                    {
-                                        if (currentGroup.Item1 < counter)
-                                        {
-                                            currentGroup.Item2.Add(newGroup);
-                                            break;
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    elements.Add(newGroup);
-                                }
-                            }
-                            else if (newline[counter] == "rectangle" || newline[counter] == "elipse")
-                            {
-                                Shape newShape = new Shape(newline[counter], randomColor, Convert.ToInt32(newline[counter + 1]), Convert.ToInt32(newline[counter + 2]), Convert.ToInt32(newline[counter + 3]), Convert.ToInt32(newline[counter+4]), false);
-                                shapeList.Add(newShape);
-                                //If there are spaces before the shape it means the shape in one or more groups.
-                                if (counter > 0)
-                                {
-                                    //Find the group that has been last added to the list, and less spaces in front of it.
-                                    //Which means it it higher in the hierarchy.
-                                    foreach (Tuple<int, GroupComposite> currentGroup in proceedingSpaces)
-                                    {
-                                        if (currentGroup.Item1 < counter)
-                                        {
-                                            currentGroup.Item2.Add(newShape);
-                                            //Once the group is found the search stops. The shape only needs to be added to one group.
-                                            break;
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    elements.Add(newShape);
-                                }
-                            }
-                        }
-                    }
-                    groupList = elements;
-                    Display();
-                }
-            }
-        }
+        
         class DrawingWindow
         {
             // Initializers
             private Controller controller = new Controller();
             private Stack<UndoableCommand> commandstack = new Stack<UndoableCommand>();
             private Stack<UndoableCommand> redocommandstack = new Stack<UndoableCommand>();
+            private ShapeVisitor shapeVisitor = new ShapeVisitor();
 
             public void GroupShapes(List<GroupComponent> shapesToGroup)
             {
@@ -406,7 +93,7 @@ namespace DrawingApp
             public void MoveShape(Shape shape, int new_x_pos, int new_y_pos)
             {
                 // Create command operation and execute it
-                UndoableCommand command = new MoveShapeCommand(controller, shape, new_x_pos, new_y_pos);
+                UndoableCommand command = new MoveShapeCommand(controller, shapeVisitor, shape, new_x_pos, new_y_pos);
                 command.Execute();
                 // Add command to command stack
                 commandstack.Push(command);
@@ -414,14 +101,14 @@ namespace DrawingApp
             public void ResizeShape(Shape shape, int new_x_size, int new_y_size)
             {
                 // Create command operation and execute it
-                UndoableCommand command = new ResizeShapeCommand(controller, shape, new_x_size, new_y_size);
+                UndoableCommand command = new ResizeShapeCommand(controller, shapeVisitor, shape, new_x_size, new_y_size);
                 command.Execute();
                 // Add command to command stack
                 commandstack.Push(command);
             }
             public void Save()
             {
-                SaveCommand command = new SaveCommand(controller);
+                SaveCommand command = new SaveCommand(controller, shapeVisitor);
                 command.Execute();
             }
             public void Load()

@@ -44,7 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddShapeCommand.cs" />
+    <Compile Include="Controller.cs" />
     <Compile Include="MoveObject.cs" />
+    <Compile Include="MoveShapeCommand.cs" />
     <Compile Include="PlayingWithApplication.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -54,10 +57,13 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResizeObject.cs" />
+    <Compile Include="ResizeShapeCommand.cs" />
+    <Compile Include="SaveCommand.cs" />
     <Compile Include="Shape.cs" />
     <Compile Include="GroupComponent.cs" />
     <Compile Include="GroupComposite.cs" />
     <Compile Include="ShapeVisitor.cs" />
+    <Compile Include="UndoableCommand.cs" />
     <Compile Include="Visitable.cs" />
     <Compile Include="Visitor.cs" />
     <Compile Include="WriteToFile.cs" />

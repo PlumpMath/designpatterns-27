@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DrawingApp
+﻿namespace DrawingApp
 {
     interface Visitable
     {
-        public void accept(Visitor visitor);
+        //The only function the Visitable class has is accept. It's just used to parse the Visitor to the right operation class. (Move Resize WriteToFile)
+        void accept(Visitor visitor);
     }
 }
