@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="AddShapeCommand.cs" />
     <Compile Include="Controller.cs" />
+    <Compile Include="LoadCommand.cs" />
     <Compile Include="MoveObject.cs" />
     <Compile Include="MoveShapeCommand.cs" />
     <Compile Include="PlayingWithApplication.cs">

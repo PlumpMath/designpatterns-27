@@ -10,23 +10,23 @@ namespace DrawingApp
         public ShapeVisitor(){
         }
 
-        public void visit(MoveObject shapeOrGroup)
+        public void visit(MoveObject moveObject)
         {
             //Finnally actually move the shape to the new position.
-            Shape currentShape = shapeOrGroup.getShape();
-            currentShape.pos_x = shapeOrGroup.getX();
-            currentShape.pos_y = shapeOrGroup.getY();
+            Shape currentShape = moveObject.getShape();
+            currentShape.pos_x = moveObject.getX();
+            currentShape.pos_y = moveObject.getY();
         }
 
-        public void visit(ResizeObject shapeOrGroup)
+        public void visit(ResizeObject resizeObject)
         {
             //Resize the shape to the new dimentions.
-            Shape currentShape = shapeOrGroup.getShape();
-            currentShape.size_x = shapeOrGroup.getXSize();
-            currentShape.size_y = shapeOrGroup.getYSize();
+            Shape currentShape = resizeObject.getShape();
+            currentShape.size_x = resizeObject.getXSize();
+            currentShape.size_y = resizeObject.getYSize();
         }
 
-        public void visit(WriteToFile shapeOrGroup)
+        public void visit(WriteToFile writeToFile)
         {
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
@@ -41,7 +41,7 @@ namespace DrawingApp
                 using (StreamWriter writer = new StreamWriter(saveFileDialog1.OpenFile()))
                 {
 
-                    foreach (GroupComponent component in shapeOrGroup.GetController().GetGroups())
+                    foreach (GroupComponent component in writeToFile.GetController().GetGroups())
                     {
                         component.WriteToFile(writer, 0);
                         //Only the important info is saved. Not the color. Unnessesary.
