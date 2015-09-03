@@ -238,18 +238,10 @@ namespace DrawingApp
                 if (currentShape.type == "rectangle")
                 {
                     g.FillRectangle(brush, currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y);
-                    if (currentShape.is_selected)
-                    {
-                        //g.DrawRectangle(selected_pen, currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y);
-                    }
                 }
                 else if (currentShape.type == "ellipse")
                 {
                     g.FillEllipse(brush, currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y);
-                    if (currentShape.is_selected)
-                    {
-                        //g.DrawEllipse(selected_pen, currentShape.pos_x, currentShape.pos_y, currentShape.size_x, currentShape.size_y);
-                    }
                 }
             }
 
@@ -257,6 +249,8 @@ namespace DrawingApp
             {
                 if (currentComponent.isSelected())
                 {
+                    
+
                     g.DrawRectangle(selected_pen, currentComponent.GetMinX(), currentComponent.GetMinY(), currentComponent.GetMaxX() - currentComponent.GetMinX(), currentComponent.GetMaxY() - currentComponent.GetMinY());
                 }
             }

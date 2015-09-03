@@ -1,15 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 
 namespace DrawingApp
 {
     abstract class GroupComponent
     {
-        public string name;
-        public GroupComponent(string name)
-        {
-            this.name = name;
-        }
         public abstract void Add(GroupComponent c);
         public abstract void Remove(GroupComponent c);
         public abstract void Display(int depth);
@@ -23,5 +19,6 @@ namespace DrawingApp
         public abstract int GetMaxY();
         public abstract int GetMinX();
         public abstract int GetMinY();
+        public abstract Color getBackColor();
     }
 }
