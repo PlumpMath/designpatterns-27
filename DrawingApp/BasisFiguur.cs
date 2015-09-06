@@ -33,7 +33,7 @@ namespace DrawingApp
 
         public void DrawShape(Graphics g)
         {
-            figuurType.DrawShape(g, backColor, posX, posY, sizX, sizY, selected);
+            figuurType.DrawShape(g, backColor, posX, posY, sizX, sizY);
         }
 
         public override void Add(GroupComponent c)
