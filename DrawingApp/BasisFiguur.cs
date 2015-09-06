@@ -18,6 +18,11 @@ namespace DrawingApp
         private bool selected;
         public FiguurType figuurType;
 
+        public override void setName(string name) 
+        {
+            this.name = name;
+        }
+
         public void setPosSiz(int posX, int posY, int sizX, int sizY)
         {
             this.posX = posX;
@@ -48,11 +53,11 @@ namespace DrawingApp
 
         public override void Display(int depth)
         {
-            Console.WriteLine(new String(' ', depth) + figuurType.figuurType() + ' ' + posX + ' ' + posY + ' ' + sizX + ' ' + sizY);
+            Console.WriteLine(new String(' ', depth) + this.name + ' ' + posX + ' ' + posY + ' ' + sizX + ' ' + sizY);
         }
         public override void WriteToFile(System.IO.StreamWriter writer, int depth)
         {
-            writer.WriteLine(new String(' ', depth) + figuurType.figuurType() + ' ' + posX + ' ' + posY+ ' ' + sizX+ ' ' + sizY);
+            writer.WriteLine(new String(' ', depth) + this.name + ' ' + posX + ' ' + posY+ ' ' + sizX+ ' ' + sizY);
         }
         public override bool ContainsMember(GroupComponent shape)
         {
@@ -65,6 +70,10 @@ namespace DrawingApp
         public override bool isSelected()
         {
             return selected;
+        }
+        public override void setSelected(bool selected)
+        {
+            this.selected = selected;
         }
         public override int Size()
         {
@@ -87,9 +96,57 @@ namespace DrawingApp
         {
             return posY;
         }
+        public override void setBackColor(Color g)
+        {
+            this.backColor = g;
+        }
         public override Color getBackColor()
         {
             return backColor;
+        }
+        public string toString()
+        {
+            return figuurType.toString();
+        }
+
+        public override int GetPosX()
+        {
+            return this.posX;
+        }
+
+        public override int GetPosY()
+        {
+            return this.posY;
+        }
+
+        public override int GetSizX()
+        {
+            return this.sizX;
+        }
+
+        public override int GetSizY()
+        {
+            return this.sizY;
+        }
+
+        public override void SetPosX(int posX)
+        {
+            this.posX = posX;
+        }
+
+        public override void SetPosY(int posY)
+        {
+            this.posY = posY;
+        }
+
+        public override void SetSizX(int sizX)
+        {
+            this.sizX = sizX;
+        }
+
+        public override void SetSizY(int sizY)
+        {
+            this.sizY = sizY;
         }
     }
 }

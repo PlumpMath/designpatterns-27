@@ -2,11 +2,11 @@
 {
     class ResizeObject : Visitable
     {
-        private Shape shape;
+        private BasisFiguur shape;
         private int newXSize;
         private int newYSize;
 
-        public ResizeObject(Shape shape, int newXSize, int newYSize)
+        public ResizeObject(BasisFiguur shape, int newXSize, int newYSize)
         {
             this.shape = shape;
             this.newXSize = newXSize;
@@ -17,7 +17,7 @@
         {
             visitor.visit(this);
         }
-        public Shape getShape()
+        public BasisFiguur getShape()
         {
             return shape;
         }

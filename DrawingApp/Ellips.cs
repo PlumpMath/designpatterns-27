@@ -10,7 +10,7 @@ namespace DrawingApp
     {
         public Ellips()
         {
-            figuurType = new IsEllips();
+            figuurType = new IsEllipse();
         }
 
     }

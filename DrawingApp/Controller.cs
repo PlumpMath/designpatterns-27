@@ -11,7 +11,7 @@ namespace DrawingApp
 {
     class Controller
     {
-        private List<Shape> shapeList = new List<Shape>();
+        private List<BasisFiguur> shapeList = new List<BasisFiguur>();
         private List<GroupComponent> groupList = new List<GroupComponent>();
         Random Random = new Random();
         int groupCounter = 0;
@@ -27,7 +27,8 @@ namespace DrawingApp
 
         public void GroupShapes(List<GroupComponent> shapesToGroup)
         {
-            GroupComposite newGroup = new GroupComposite("group " + groupCounter);
+            GroupComposite newGroup = new GroupComposite();
+            newGroup.setName("group " + groupCounter);
             groupCounter++;
 
             foreach (GroupComponent currentShape in shapesToGroup)
@@ -62,7 +63,7 @@ namespace DrawingApp
             Display();
         }
 
-        public void ToggleSelect(Shape shape)
+        public void ToggleSelect(BasisFiguur shape)
         {
             GroupComponent groupToSelect = null;
             foreach (GroupComponent composite in groupList)
@@ -82,7 +83,7 @@ namespace DrawingApp
             }
         }
 
-        public List<Shape> GetShapes()
+        public List<BasisFiguur> GetShapes()
         {
             return shapeList;
         }
@@ -92,13 +93,13 @@ namespace DrawingApp
             return groupList;
         }
 
-        public void AddShape(Shape shape)
+        public void AddShape(BasisFiguur shape)
         {
             groupList.Add(shape);
             shapeList.Add(shape);
             Display();
         }
-        public void RemoveShape(Shape shape)
+        public void RemoveShape(BasisFiguur shape)
         {
             shapeList.Remove(shape);
         }
@@ -127,7 +128,8 @@ namespace DrawingApp
                         }
                         if (newline[counter] == "group")
                         {
-                            GroupComposite newGroup = new GroupComposite("group " + newline[counter + 1]);
+                            GroupComposite newGroup = new GroupComposite();
+                            newGroup.setName("group " + newline[counter + 1]);
                             //Increase the groupCounter or else there will be multiple groups called "group 0" for example.
                             groupCounter++;
                             proceedingSpaces.Insert(0, new Tuple<int, GroupComposite>(counter, newGroup));
@@ -149,26 +151,39 @@ namespace DrawingApp
                         }
                         else if (newline[counter] == "rectangle" || newline[counter] == "elipse")
                         {
-                            Shape newShape = new Shape(newline[counter], randomColor, Convert.ToInt32(newline[counter + 1]), Convert.ToInt32(newline[counter + 2]), Convert.ToInt32(newline[counter + 3]), Convert.ToInt32(newline[counter + 4]), false);
-                            shapeList.Add(newShape);
-                            //If there are spaces before the shape it means the shape in one or more groups.
-                            if (counter > 0)
+                            BasisFiguur newShape = null;
+                            if (newline[counter] == "rectangle") {
+                                newShape = new Rechthoek();
+                            }else if(newline[counter] == "elipse")
                             {
-                                //Find the group that has been last added to the list, and less spaces in front of it.
-                                //Which means it it higher in the hierarchy.
-                                foreach (Tuple<int, GroupComposite> currentGroup in proceedingSpaces)
+                                newShape = new Ellips();
+                            }
+                            if (newShape != null)
+                            {
+                                newShape.setPosSiz(Convert.ToInt32(newline[counter + 1]), Convert.ToInt32(newline[counter + 2]), Convert.ToInt32(newline[counter + 3]), Convert.ToInt32(newline[counter + 4]));
+                                newShape.setBackColor(randomColor);
+                                newShape.setSelected(false);
+                                //Shape newShape = new Shape(newline[counter], randomColor, , false);
+                                shapeList.Add(newShape);
+                                //If there are spaces before the shape it means the shape in one or more groups.
+                                if (counter > 0)
                                 {
-                                    if (currentGroup.Item1 < counter)
+                                    //Find the group that has been last added to the list, and less spaces in front of it.
+                                    //Which means it it higher in the hierarchy.
+                                    foreach (Tuple<int, GroupComposite> currentGroup in proceedingSpaces)
                                     {
-                                        currentGroup.Item2.Add(newShape);
-                                        //Once the group is found the search stops. The shape only needs to be added to one group.
-                                        break;
+                                        if (currentGroup.Item1 < counter)
+                                        {
+                                            currentGroup.Item2.Add(newShape);
+                                            //Once the group is found the search stops. The shape only needs to be added to one group.
+                                            break;
+                                        }
                                     }
                                 }
-                            }
-                            else
-                            {
-                                elements.Add(newShape);
+                                else
+                                {
+                                    elements.Add(newShape);
+                                }
                             }
                         }
                     }

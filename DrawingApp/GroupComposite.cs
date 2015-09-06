@@ -11,12 +11,6 @@ namespace DrawingApp
     {
         private List<GroupComponent> shapes = new List<GroupComponent>();
 
-        public GroupComposite(string name)
-            : base(name)
-        {
-
-        }
-
         public override void Add(GroupComponent e)
         {
             shapes.Add(e);
@@ -121,6 +115,66 @@ namespace DrawingApp
                 }
             }
             return minY;
+        }
+
+        public override void setSelected(bool selected)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Color getBackColor()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void setBackColor(Color g)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override int GetPosX()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override int GetPosY()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override int GetSizX()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override int GetSizY()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SetPosX(int posX)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SetPosY(int posY)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SetSizX(int sizX)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SetSizY(int sizY)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void setName(string name)
+        {
+            this.name = name;
         }
     }
 }

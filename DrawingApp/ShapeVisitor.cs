@@ -13,17 +13,17 @@ namespace DrawingApp
         public void visit(MoveObject moveObject)
         {
             //Finnally actually move the shape to the new position.
-            Shape currentShape = moveObject.getShape();
-            currentShape.pos_x = moveObject.getX();
-            currentShape.pos_y = moveObject.getY();
+            BasisFiguur currentShape = moveObject.getShape();
+            currentShape.SetPosX(moveObject.getX());
+            currentShape.SetPosY(moveObject.getY());
         }
 
         public void visit(ResizeObject resizeObject)
         {
             //Resize the shape to the new dimentions.
-            Shape currentShape = resizeObject.getShape();
-            currentShape.size_x = resizeObject.getXSize();
-            currentShape.size_y = resizeObject.getYSize();
+            BasisFiguur currentShape = resizeObject.getShape();
+            currentShape.SetSizX(resizeObject.getXSize());
+            currentShape.SetSizY(resizeObject.getYSize());
         }
 
         public void visit(WriteToFile writeToFile)

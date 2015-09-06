@@ -64,7 +64,6 @@
     <Compile Include="ResizeObject.cs" />
     <Compile Include="ResizeShapeCommand.cs" />
     <Compile Include="SaveCommand.cs" />
-    <Compile Include="Shape.cs" />
     <Compile Include="GroupComponent.cs" />
     <Compile Include="GroupComposite.cs" />
     <Compile Include="ShapeVisitor.cs" />

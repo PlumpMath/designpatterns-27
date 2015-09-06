@@ -8,11 +8,11 @@ namespace DrawingApp
 {
     class AddShapeCommand : UndoableCommand
     {
-        private Shape shape;
+        private BasisFiguur shape;
         private Controller controller;
 
         // Constructor
-        public AddShapeCommand(Controller controller, Shape shape)
+        public AddShapeCommand(Controller controller, BasisFiguur shape)
         {
             this.shape = shape;
             this.controller = controller;

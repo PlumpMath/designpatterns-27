@@ -8,7 +8,7 @@ namespace DrawingApp
 {
     class MoveShapeCommand : UndoableCommand
     {
-        private Shape shape;
+        private BasisFiguur shape;
         private Controller controller;
         private ShapeVisitor shapeVisitor;
         private int old_pos_x;
@@ -16,7 +16,7 @@ namespace DrawingApp
         private int new_pos_x;
         private int new_pos_y;
 
-        public MoveShapeCommand(Controller controller, ShapeVisitor shapeVisitor, Shape shape, int new_x_pos, int new_y_pos)
+        public MoveShapeCommand(Controller controller, ShapeVisitor shapeVisitor, BasisFiguur shape, int new_x_pos, int new_y_pos)
         {
             this.controller = controller;
             this.shapeVisitor = shapeVisitor;
