@@ -8,9 +8,15 @@ namespace DrawingApp
 {
     class Rechthoek : BasisFiguur
     {
-        public Rechthoek()
+        private static Rechthoek _instance = new Rechthoek();
+        private Rechthoek() { }
+        public static Rechthoek Instance
         {
-            figuurType = new IsRectangle();
+            get
+            {
+                _instance.figuurType = new IsRectangle();
+                return _instance;
+            }
         }
     }
 }

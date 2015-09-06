@@ -8,10 +8,19 @@ namespace DrawingApp
 {
     class Ellips : BasisFiguur
     {
-        public Ellips()
+        private static Ellips _instance;
+        private Ellips() { }
+        public static Ellips Instance
         {
-            figuurType = new IsEllipse();
+            get
+            {
+                if(_instance == null)
+                {
+                    _instance = new Ellips();
+                    _instance.figuurType = new IsEllipse();
+                }
+                return _instance;
+            }
         }
-
     }
 }

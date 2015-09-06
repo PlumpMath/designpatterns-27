@@ -153,10 +153,11 @@ namespace DrawingApp
                         {
                             BasisFiguur newShape = null;
                             if (newline[counter] == "rectangle") {
-                                newShape = new Rechthoek();
+                                newShape = Rechthoek.Instance;
+
                             }else if(newline[counter] == "elipse")
                             {
-                                newShape = new Ellips();
+                                newShape = Ellips.Instance;
                             }
                             if (newShape != null)
                             {
