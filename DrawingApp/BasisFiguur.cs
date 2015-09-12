@@ -16,7 +16,28 @@ namespace DrawingApp
         private int sizX;
         private int sizY;
         private bool selected;
-        public FiguurType figuurType;
+        public Strategy strategy;
+
+        public enum Shapes
+        {
+            RECTANGLE,
+            ELLIPSE
+        }
+
+        public BasisFiguur(Shapes type)
+        {
+            switch (type)
+            {
+                case Shapes.RECTANGLE:
+                    strategy = Rechthoek.Instance;
+                    break;
+                case Shapes.ELLIPSE:
+                    strategy = Ellips.Instance;
+                    break;
+                default:
+                    break;
+            }
+        }
 
         public override void setName(string name) 
         {
@@ -31,10 +52,6 @@ namespace DrawingApp
             this.sizY = sizY;
         }
 
-        public void DrawShape(Graphics g)
-        {
-            figuurType.DrawShape(g, backColor, posX, posY, sizX, sizY);
-        }
 
         public override void Add(GroupComponent c)
         {
@@ -103,10 +120,6 @@ namespace DrawingApp
         public override Color getBackColor()
         {
             return backColor;
-        }
-        public string toString()
-        {
-            return figuurType.toString();
         }
 
         public override int GetPosX()

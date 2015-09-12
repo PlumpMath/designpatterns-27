@@ -149,15 +149,16 @@ namespace DrawingApp
                                 elements.Add(newGroup);
                             }
                         }
-                        else if (newline[counter] == "rectangle" || newline[counter] == "elipse")
+                        else if (newline[counter] == "rectangle" || newline[counter] == "ellipse")
                         {
                             BasisFiguur newShape = null;
                             if (newline[counter] == "rectangle") {
-                                newShape = Rechthoek.Instance;
+                                newShape = new BasisFiguur(BasisFiguur.Shapes.RECTANGLE);
 
-                            }else if(newline[counter] == "elipse")
+                            }
+                            else if(newline[counter] == "ellipse")
                             {
-                                newShape = Ellips.Instance;
+                                newShape = new BasisFiguur(BasisFiguur.Shapes.ELLIPSE);
                             }
                             if (newShape != null)
                             {

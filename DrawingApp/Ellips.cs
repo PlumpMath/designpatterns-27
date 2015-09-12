@@ -1,26 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace DrawingApp
 {
-    class Ellips : BasisFiguur
+    class Ellips : Strategy
     {
-        private static Ellips _instance;
-        private Ellips() { }
+        protected internal static Ellips _instance = new Ellips();
+        private Ellips() {}
         public static Ellips Instance
         {
             get
             {
-                if(_instance == null)
-                {
-                    _instance = new Ellips();
-                    _instance.figuurType = new IsEllipse();
-                }
                 return _instance;
             }
+        }
+
+        public void Draw(PaintEventArgs e, Brush b, Rectangle r)
+        {
+            e.Graphics.FillEllipse(b, r);
+        }
+
+        public string toString()
+        {
+            return "ellipse";
         }
     }
 }

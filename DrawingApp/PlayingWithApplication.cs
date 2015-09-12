@@ -178,7 +178,7 @@ namespace DrawingApp
                         if (mode == "Create Rectangle")
                         {
                             //To not have any negative numbers some of the variables need to be multiplied by -1.
-                            BasisFiguur newShape = Rechthoek.Instance;
+                            BasisFiguur newShape = new BasisFiguur(BasisFiguur.Shapes.RECTANGLE);
                             newShape.setPosSiz(mouse_pos.X, initialMousePos.Y, size_x * -1, size_y);
                             newShape.setBackColor(randomColor);
                             newShape.setSelected(false);
@@ -188,7 +188,7 @@ namespace DrawingApp
                         else if (mode == "Create Ellipse")
                         {
                             //This will execute the AddShape command
-                            BasisFiguur newShape = Ellips.Instance;
+                            BasisFiguur newShape = new BasisFiguur(BasisFiguur.Shapes.ELLIPSE);
                             newShape.setPosSiz(mouse_pos.X, initialMousePos.Y, size_x * -1, size_y);
                             newShape.setBackColor(randomColor);
                             newShape.setSelected(false);
@@ -200,7 +200,7 @@ namespace DrawingApp
                     {
                         if (mode == "Create Rectangle")
                         {
-                            BasisFiguur newShape = Rechthoek.Instance;
+                            BasisFiguur newShape = new BasisFiguur(BasisFiguur.Shapes.RECTANGLE);
                             newShape.setPosSiz(initialMousePos.X, mouse_pos.Y, size_x, size_y * -1);
                             newShape.setBackColor(randomColor);
                             newShape.setSelected(false);
@@ -209,7 +209,7 @@ namespace DrawingApp
                         }
                         else if (mode == "Create Ellipse")
                         {
-                            BasisFiguur newShape = Ellips.Instance;
+                            BasisFiguur newShape = new BasisFiguur(BasisFiguur.Shapes.ELLIPSE);
                             newShape.setPosSiz(initialMousePos.X, mouse_pos.Y, size_x, size_y * -1);
                             newShape.setBackColor(randomColor);
                             newShape.setSelected(false);
@@ -221,7 +221,7 @@ namespace DrawingApp
                     {
                         if (mode == "Create Rectangle")
                         {
-                            BasisFiguur newShape = Rechthoek.Instance;
+                            BasisFiguur newShape = new BasisFiguur(BasisFiguur.Shapes.RECTANGLE);
                             newShape.setPosSiz(mouse_pos.X, mouse_pos.Y, size_x * -1, size_y * -1);
                             newShape.setBackColor(randomColor);
                             newShape.setSelected(false);
@@ -230,7 +230,7 @@ namespace DrawingApp
                         }
                         else if (mode == "Create Ellipse")
                         {
-                            BasisFiguur newShape = Ellips.Instance;
+                            BasisFiguur newShape = new BasisFiguur(BasisFiguur.Shapes.ELLIPSE);
                             newShape.setPosSiz(mouse_pos.X, mouse_pos.Y, size_x * -1, size_y * -1);
                             newShape.setBackColor(randomColor);
                             newShape.setSelected(false);
@@ -242,7 +242,7 @@ namespace DrawingApp
                     {
                         if (mode == "Create Rectangle")
                         {
-                            BasisFiguur newShape = Rechthoek.Instance;
+                            BasisFiguur newShape = new BasisFiguur(BasisFiguur.Shapes.RECTANGLE);
                             newShape.setPosSiz(initialMousePos.X, initialMousePos.Y, size_x, size_y);
                             newShape.setBackColor(randomColor);
                             newShape.setSelected(false);
@@ -251,7 +251,7 @@ namespace DrawingApp
                         }
                         else if (mode == "Create Ellipse")
                         {
-                            BasisFiguur newShape = Ellips.Instance;
+                            BasisFiguur newShape = new BasisFiguur(BasisFiguur.Shapes.ELLIPSE);
                             newShape.setPosSiz(initialMousePos.X, initialMousePos.Y, size_x, size_y);
                             newShape.setBackColor(randomColor);
                             newShape.setSelected(false);
@@ -272,7 +272,9 @@ namespace DrawingApp
             List<BasisFiguur> allShapes = this.mainWindow.GetShapes();
             foreach (BasisFiguur currentShape in allShapes)
             {
-                currentShape.DrawShape(g);
+                Brush b = new SolidBrush(currentShape.getBackColor());
+                Rectangle r = new Rectangle(currentShape.GetPosX(), currentShape.GetPosY(), currentShape.GetSizX(), currentShape.GetSizY());
+                currentShape.strategy.Draw(e, b, r);
             }
 
             foreach (GroupComponent currentComponent in mainWindow.GetGroups())
@@ -280,20 +282,14 @@ namespace DrawingApp
                 if (currentComponent.isSelected())
                 {
                     g.DrawRectangle(selected_pen, currentComponent.GetMinX(), currentComponent.GetMinY(), currentComponent.GetMaxX() - currentComponent.GetMinX(), currentComponent.GetMaxY() - currentComponent.GetMinY());
+                    //currentComponent.strategy.Draw(e, new SolidBrush(Color.Black), new Rectangle(currentOutline.GetPosX(), currentOutline.GetPosY(), currentOutline.GetSizX(), currentOutline.GetSizY()));
                 }
             }
 
             //And an outline needs to be drawn as well to show a new shape is being created.
             foreach (BasisFiguur currentOutline in outlines)
             {
-                if (currentOutline.toString() == "rectangle")
-                {
-                    g.DrawRectangle(blackPen, currentOutline.GetPosX(), currentOutline.GetPosY(), currentOutline.GetSizX(), currentOutline.GetSizY());
-                }
-                else if (currentOutline.toString() == "ellipse")
-                {
-                    g.DrawEllipse(blackPen, currentOutline.GetPosX(), currentOutline.GetPosY(), currentOutline.GetSizX(), currentOutline.GetSizY());
-                }
+                currentOutline.strategy.Draw(e, new SolidBrush(Color.Black), new Rectangle(currentOutline.GetPosX(), currentOutline.GetPosY(), currentOutline.GetSizX(), currentOutline.GetSizY()));
             }
             //Empty the outlines once they've all been drawn.
             outlines.Clear();
@@ -316,15 +312,15 @@ namespace DrawingApp
                             //Add an outline to show where the shape will be moved to.
                             BasisFiguur newOutline = null;
                             
-                            if (current_shape.toString() == "rectangle")
+                            if (current_shape.strategy.toString() == "rectangle")
                             {
-                                newOutline = Rechthoek.Instance;
+                                newOutline = new BasisFiguur(BasisFiguur.Shapes.RECTANGLE);
                                 newOutline.setPosSiz(current_shape.GetMinX() + (mouse_pos.X - initialMousePos.X), current_shape.GetMinY() + (mouse_pos.Y - initialMousePos.Y), current_shape.GetMaxX() - current_shape.GetMinX(), current_shape.GetMaxY() - current_shape.GetMinY());
                                 newOutline.setSelected(false);
                                 newOutline.setBackColor(Color.Black);
-                            }else if(current_shape.toString() == "ellipse")
+                            }else if(current_shape.strategy.toString() == "ellipse")
                             {
-                                newOutline = Ellips.Instance;
+                                newOutline = new BasisFiguur(BasisFiguur.Shapes.ELLIPSE);
                                 newOutline.setPosSiz(current_shape.GetMinX() + (mouse_pos.X - initialMousePos.X), current_shape.GetMinY() + (mouse_pos.Y - initialMousePos.Y), current_shape.GetMaxX() - current_shape.GetMinX(), current_shape.GetMaxY() - current_shape.GetMinY());
                                 newOutline.setSelected(false);
                                 newOutline.setBackColor(Color.Black);
@@ -344,16 +340,16 @@ namespace DrawingApp
                         {
                             //Change the size of every shape that has the is_selected boolean active.
                             BasisFiguur newOutline = null;
-                            if(current_shape.toString() == "rectangle")
+                            if(current_shape.strategy.toString() == "rectangle")
                             {
-                                newOutline = Rechthoek.Instance;
+                                newOutline = new BasisFiguur(BasisFiguur.Shapes.RECTANGLE);
                                 newOutline.setPosSiz(current_shape.GetPosX(), current_shape.GetPosY(), mouse_pos.X - current_shape.GetPosX(), mouse_pos.Y - current_shape.GetPosY());
                                 newOutline.setSelected(false);
                                 newOutline.setBackColor(Color.Black);
 
-                            }else if(current_shape.toString() == "ellipse")
+                            }else if(current_shape.strategy.toString() == "ellipse")
                             {
-                                newOutline = Ellips.Instance;
+                                newOutline = new BasisFiguur(BasisFiguur.Shapes.ELLIPSE);
                                 newOutline.setPosSiz(current_shape.GetPosX(), current_shape.GetPosY(), mouse_pos.X - current_shape.GetPosX(), mouse_pos.Y - current_shape.GetPosY());
                                 newOutline.setSelected(false);
                                 newOutline.setBackColor(Color.Black);
@@ -376,14 +372,14 @@ namespace DrawingApp
                         if (mode == "Create Rectangle")
                         {
                             //Just the outline rectangle is drawn first
-                            newOutline = Rechthoek.Instance;
+                            newOutline = new BasisFiguur(BasisFiguur.Shapes.RECTANGLE);
                             newOutline.setPosSiz(mouse_pos.X, initialMousePos.Y, size_x * -1, size_y);
                             newOutline.setBackColor(Color.Black);
                             newOutline.setSelected(false);
                         }
                         else if (mode == "Create Ellipse")
                         {
-                            newOutline = Ellips.Instance;
+                            newOutline = new BasisFiguur(BasisFiguur.Shapes.ELLIPSE);
                             newOutline.setPosSiz(mouse_pos.X, initialMousePos.Y, size_x * -1, size_y);
                             newOutline.setBackColor(Color.Black);
                             newOutline.setSelected(false);
@@ -393,14 +389,14 @@ namespace DrawingApp
                     {
                         if (mode == "Create Rectangle")
                         {
-                            newOutline = Rechthoek.Instance;
+                            newOutline = new BasisFiguur(BasisFiguur.Shapes.RECTANGLE);
                             newOutline.setPosSiz(initialMousePos.X, mouse_pos.Y, size_x, size_y * -1);
                             newOutline.setBackColor(Color.Black);
                             newOutline.setSelected(false);
                         }
                         else if (mode == "Create Ellipse")
                         {
-                            newOutline = Ellips.Instance;
+                            newOutline = new BasisFiguur(BasisFiguur.Shapes.ELLIPSE);
                             newOutline.setPosSiz(initialMousePos.X, mouse_pos.Y, size_x, size_y * -1);
                             newOutline.setBackColor(Color.Black);
                             newOutline.setSelected(false);
@@ -410,14 +406,14 @@ namespace DrawingApp
                     {
                         if (mode == "Create Rectangle")
                         {
-                            newOutline = Rechthoek.Instance;
+                            newOutline = new BasisFiguur(BasisFiguur.Shapes.RECTANGLE);
                             newOutline.setPosSiz(mouse_pos.X, mouse_pos.Y, size_x * -1, size_y * -1);
                             newOutline.setBackColor(Color.Black);
                             newOutline.setSelected(false);
                         }
                         else if (mode == "Create Ellipse")
                         {
-                            newOutline = Ellips.Instance;
+                            newOutline = new BasisFiguur(BasisFiguur.Shapes.ELLIPSE);
                             newOutline.setPosSiz(mouse_pos.X, mouse_pos.Y, size_x * -1, size_y * -1);
                             newOutline.setBackColor(Color.Black);
                             newOutline.setSelected(false);
@@ -427,14 +423,14 @@ namespace DrawingApp
                     {
                         if (mode == "Create Rectangle")
                         {
-                            newOutline = Rechthoek.Instance;
+                            newOutline = new BasisFiguur(BasisFiguur.Shapes.RECTANGLE);
                             newOutline.setPosSiz(initialMousePos.X, initialMousePos.Y, size_x, size_y);
                             newOutline.setBackColor(Color.Black);
                             newOutline.setSelected(false);
                         }
                         else if (mode == "Create Ellipse")
                         {
-                            newOutline = Ellips.Instance;
+                            newOutline = new BasisFiguur(BasisFiguur.Shapes.ELLIPSE);
                             newOutline.setPosSiz(initialMousePos.X, initialMousePos.Y, size_x, size_y);
                             newOutline.setBackColor(Color.Black);
                             newOutline.setSelected(false);

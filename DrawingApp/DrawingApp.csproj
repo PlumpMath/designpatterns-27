@@ -48,7 +48,6 @@
     <Compile Include="BasisFiguur.cs" />
     <Compile Include="Controller.cs" />
     <Compile Include="Ellips.cs" />
-    <Compile Include="FiguurType.cs" />
     <Compile Include="LoadCommand.cs" />
     <Compile Include="MoveObject.cs" />
     <Compile Include="MoveShapeCommand.cs" />
@@ -67,6 +66,7 @@
     <Compile Include="GroupComponent.cs" />
     <Compile Include="GroupComposite.cs" />
     <Compile Include="ShapeVisitor.cs" />
+    <Compile Include="Strategy.cs" />
     <Compile Include="UndoableCommand.cs" />
     <Compile Include="Visitable.cs" />
     <Compile Include="Visitor.cs" />
