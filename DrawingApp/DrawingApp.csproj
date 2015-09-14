@@ -46,11 +46,16 @@
   <ItemGroup>
     <Compile Include="AddShapeCommand.cs" />
     <Compile Include="BasisFiguur.cs" />
+    <Compile Include="BottomOrnament.cs" />
     <Compile Include="Controller.cs" />
     <Compile Include="Ellips.cs" />
+    <Compile Include="LeftOrnament.cs" />
     <Compile Include="LoadCommand.cs" />
     <Compile Include="MoveObject.cs" />
     <Compile Include="MoveShapeCommand.cs" />
+    <Compile Include="Ornament.cs" />
+    <Compile Include="OrnamentBase.cs" />
+    <Compile Include="OrnamentDecorator.cs" />
     <Compile Include="PlayingWithApplication.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -62,11 +67,13 @@
     <Compile Include="Rechthoek.cs" />
     <Compile Include="ResizeObject.cs" />
     <Compile Include="ResizeShapeCommand.cs" />
+    <Compile Include="RightOrnament.cs" />
     <Compile Include="SaveCommand.cs" />
     <Compile Include="GroupComponent.cs" />
     <Compile Include="GroupComposite.cs" />
     <Compile Include="ShapeVisitor.cs" />
     <Compile Include="Strategy.cs" />
+    <Compile Include="TopOrnament.cs" />
     <Compile Include="UndoableCommand.cs" />
     <Compile Include="Visitable.cs" />
     <Compile Include="Visitor.cs" />

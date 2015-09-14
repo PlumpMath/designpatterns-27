@@ -268,6 +268,7 @@ namespace DrawingApp
         private void DrawingApp_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
+
             //While painting the app needs to redraw every shape in the shapequeue.
             List<BasisFiguur> allShapes = this.mainWindow.GetShapes();
             foreach (BasisFiguur currentShape in allShapes)
@@ -279,11 +280,11 @@ namespace DrawingApp
 
             foreach (GroupComponent currentComponent in mainWindow.GetGroups())
             {
+                //Draw every ornament on every GroupComponent.
+                currentComponent.DrawOrnaments(g);
                 if (currentComponent.isSelected())
                 {
-                    g.DrawRectangle(selected_pen, currentComponent.GetMinX(), currentComponent.GetMinY(), currentComponent.GetMaxX() - currentComponent.GetMinX(), currentComponent.GetMaxY() - currentComponent.GetMinY());
-                    //currentComponent.strategy.Draw(e, new SolidBrush(Color.Black), new Rectangle(currentOutline.GetPosX(), currentOutline.GetPosY(), currentOutline.GetSizX(), currentOutline.GetSizY()));
-                }
+                    g.DrawRectangle(selected_pen, currentComponent.GetMinX(), currentComponent.GetMinY(), currentComponent.GetMaxX() - currentComponent.GetMinX(), currentComponent.GetMaxY() - currentComponent.GetMinY());                }
             }
 
             //And an outline needs to be drawn as well to show a new shape is being created.
@@ -457,6 +458,18 @@ namespace DrawingApp
                 this.Refresh();
             }
             mode = (string)comboBox.SelectedItem;
+            if (mode == "Move" || mode == "Resize")
+            {
+                AddOrnamentButton.Enabled = true;
+                OrnamentSideCombo.Enabled = true;
+                OrnamentTextbox.Enabled = true;
+            }
+            else
+            {
+                AddOrnamentButton.Enabled = false;
+                OrnamentSideCombo.Enabled = false;
+                OrnamentTextbox.Enabled = false;
+            }
         }
 
         private void DrawingApp_MouseClick(object sender, MouseEventArgs e)
@@ -513,6 +526,18 @@ namespace DrawingApp
                 }
             }
             mainWindow.UnGroupShapes(shapesToUnGroup);
+            this.Refresh();
+        }
+
+        private void AddOrnamentButton_Click(object sender, EventArgs e)
+        {
+            foreach (GroupComponent currentShape in this.mainWindow.GetGroups())
+            {
+                if (currentShape.isSelected())
+                {
+                    currentShape.AddOrnament(OrnamentTextbox.Text,OrnamentSideCombo.SelectedItem.ToString());
+                }
+            }
             this.Refresh();
         }
     }

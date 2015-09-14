@@ -17,7 +17,8 @@ namespace DrawingApp
         private int sizY;
         private bool selected;
         public Strategy strategy;
-
+        public List<OrnamentBase> Ornaments = new List<OrnamentBase>();
+        
         public enum Shapes
         {
             RECTANGLE,
@@ -26,6 +27,7 @@ namespace DrawingApp
 
         public BasisFiguur(Shapes type)
         {
+
             switch (type)
             {
                 case Shapes.RECTANGLE:
@@ -74,6 +76,11 @@ namespace DrawingApp
         }
         public override void WriteToFile(System.IO.StreamWriter writer, int depth)
         {
+            //Write every ornament to the file before the shape is written.
+            foreach(OrnamentBase orn in Ornaments)
+            {
+                writer.WriteLine(new String(' ', depth) + "ornament " + orn.getSide() + " \"" + orn.getText() + "\"");
+            }
             writer.WriteLine(new String(' ', depth) + this.name + ' ' + posX + ' ' + posY+ ' ' + sizX+ ' ' + sizY);
         }
         public override bool ContainsMember(GroupComponent shape)
@@ -160,6 +167,73 @@ namespace DrawingApp
         public override void SetSizY(int sizY)
         {
             this.sizY = sizY;
+        }
+
+        public override void AddOrnament(string text, string side)
+        {
+            switch (side)
+            {
+                case "Top":
+                    //Create a new ornament and set the text.
+                    Ornament newOr = new Ornament(text);
+                    //This ornament will be a top ornament.
+                    TopOrnament newTopOrnament = new TopOrnament(newOr);
+                    //Add the new ornament to the list. After which it can be drawn or saved.
+                    Ornaments.Add(newTopOrnament);
+                    break;
+                case "Bottom":
+                    Ornament newOrna = new Ornament(text);
+                    ButtomOrnament newBottomOrnament = new ButtomOrnament(newOrna);
+                    Ornaments.Add(newBottomOrnament);
+                    break;
+                case "Left":
+                    Ornament newOrnam = new Ornament(text);
+                    LeftOrnament newLeftOrnament = new LeftOrnament(newOrnam);
+                    Ornaments.Add(newLeftOrnament);
+                    break;
+                case "Right":
+                    Ornament newOrname = new Ornament(text);
+                    RightOrnament newRightOrnament = new RightOrnament(newOrname);
+                    Ornaments.Add(newRightOrnament);
+                    break;
+                default:
+                    break;
+            }
+
+            foreach(OrnamentBase orn in Ornaments)
+            {
+                Console.WriteLine("ornament " + orn.getSide() + " " + orn.getText());
+            }
+        }
+        public override void DrawOrnaments(Graphics g)
+        {
+            Font mainFont = new Font("Arial", 16);
+            Brush blackBrush = new SolidBrush(Color.Black);
+            SizeF stringSize = new SizeF();
+            foreach (OrnamentBase orn in Ornaments)
+            {
+                switch (orn.getSide())
+                {
+                    case "top":
+                        stringSize = g.MeasureString(orn.getText(), mainFont, 200);
+                        g.DrawString(orn.getText(), mainFont, blackBrush, (GetMinX() + (GetMaxX() - GetMinX())/2)- (stringSize.Width / 2), GetMinY() - (stringSize.Height /2));
+                        break;
+                    case "bottom":
+                        stringSize = g.MeasureString(orn.getText(), mainFont, 200);
+                        g.DrawString(orn.getText(), mainFont, blackBrush, (GetMinX() + (GetMaxX() - GetMinX()) / 2) - (stringSize.Width / 2), (GetMaxY() - (stringSize.Height / 2)));
+                        break;
+                    case "left":
+                        stringSize = g.MeasureString(orn.getText(), mainFont, 200);
+                        g.DrawString(orn.getText(), mainFont, blackBrush, GetMinX() - (stringSize.Width / 2), GetMinY() + ((GetMaxY() - GetMinY()) / 2) - (stringSize.Height / 2));
+                        break;
+                    case "right":
+                        stringSize = g.MeasureString(orn.getText(), mainFont, 200);
+                        g.DrawString(orn.getText(), mainFont, blackBrush, GetMaxX() - (stringSize.Width / 2), GetMinY() + ((GetMaxY() - GetMinY()) / 2) - (stringSize.Height / 2));
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
     }
 }

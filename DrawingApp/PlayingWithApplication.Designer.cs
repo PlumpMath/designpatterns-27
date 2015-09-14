@@ -29,14 +29,17 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.UngroupButton = new System.Windows.Forms.Button();
+            this.GroupButton = new System.Windows.Forms.Button();
             this.redo_button = new System.Windows.Forms.Button();
             this.undo_button = new System.Windows.Forms.Button();
             this.load_button = new System.Windows.Forms.Button();
             this.save_button = new System.Windows.Forms.Button();
             this.modebox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.GroupButton = new System.Windows.Forms.Button();
-            this.UngroupButton = new System.Windows.Forms.Button();
+            this.OrnamentSideCombo = new System.Windows.Forms.ComboBox();
+            this.OrnamentTextbox = new System.Windows.Forms.TextBox();
+            this.AddOrnamentButton = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -45,6 +48,9 @@
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.BackColor = System.Drawing.SystemColors.ButtonShadow;
+            this.panel1.Controls.Add(this.AddOrnamentButton);
+            this.panel1.Controls.Add(this.OrnamentTextbox);
+            this.panel1.Controls.Add(this.OrnamentSideCombo);
             this.panel1.Controls.Add(this.UngroupButton);
             this.panel1.Controls.Add(this.GroupButton);
             this.panel1.Controls.Add(this.redo_button);
@@ -55,8 +61,28 @@
             this.panel1.Controls.Add(this.label1);
             this.panel1.Location = new System.Drawing.Point(12, 12);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(822, 30);
+            this.panel1.Size = new System.Drawing.Size(822, 61);
             this.panel1.TabIndex = 0;
+            // 
+            // UngroupButton
+            // 
+            this.UngroupButton.Location = new System.Drawing.Point(740, 3);
+            this.UngroupButton.Name = "UngroupButton";
+            this.UngroupButton.Size = new System.Drawing.Size(75, 23);
+            this.UngroupButton.TabIndex = 7;
+            this.UngroupButton.Text = "UnGroup";
+            this.UngroupButton.UseVisualStyleBackColor = true;
+            this.UngroupButton.Click += new System.EventHandler(this.UngroupButton_Click);
+            // 
+            // GroupButton
+            // 
+            this.GroupButton.Location = new System.Drawing.Point(659, 3);
+            this.GroupButton.Name = "GroupButton";
+            this.GroupButton.Size = new System.Drawing.Size(75, 23);
+            this.GroupButton.TabIndex = 6;
+            this.GroupButton.Text = "Group";
+            this.GroupButton.UseVisualStyleBackColor = true;
+            this.GroupButton.Click += new System.EventHandler(this.GroupButton_Click);
             // 
             // redo_button
             // 
@@ -122,25 +148,40 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Coordinates: 0x0";
             // 
-            // GroupButton
+            // OrnamentSideCombo
             // 
-            this.GroupButton.Location = new System.Drawing.Point(659, 3);
-            this.GroupButton.Name = "GroupButton";
-            this.GroupButton.Size = new System.Drawing.Size(75, 23);
-            this.GroupButton.TabIndex = 6;
-            this.GroupButton.Text = "Group";
-            this.GroupButton.UseVisualStyleBackColor = true;
-            this.GroupButton.Click += new System.EventHandler(this.GroupButton_Click);
+            this.OrnamentSideCombo.BackColor = System.Drawing.SystemColors.Window;
+            this.OrnamentSideCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.OrnamentSideCombo.Enabled = false;
+            this.OrnamentSideCombo.FormattingEnabled = true;
+            this.OrnamentSideCombo.Items.AddRange(new object[] {
+            "Top",
+            "Bottom",
+            "Left",
+            "Right"});
+            this.OrnamentSideCombo.Location = new System.Drawing.Point(306, 31);
+            this.OrnamentSideCombo.Name = "OrnamentSideCombo";
+            this.OrnamentSideCombo.Size = new System.Drawing.Size(156, 21);
+            this.OrnamentSideCombo.TabIndex = 8;
             // 
-            // UngroupButton
+            // OrnamentTextbox
             // 
-            this.UngroupButton.Location = new System.Drawing.Point(740, 3);
-            this.UngroupButton.Name = "UngroupButton";
-            this.UngroupButton.Size = new System.Drawing.Size(75, 23);
-            this.UngroupButton.TabIndex = 7;
-            this.UngroupButton.Text = "UnGroup";
-            this.UngroupButton.UseVisualStyleBackColor = true;
-            this.UngroupButton.Click += new System.EventHandler(this.UngroupButton_Click);
+            this.OrnamentTextbox.Enabled = false;
+            this.OrnamentTextbox.Location = new System.Drawing.Point(468, 32);
+            this.OrnamentTextbox.Name = "OrnamentTextbox";
+            this.OrnamentTextbox.Size = new System.Drawing.Size(225, 20);
+            this.OrnamentTextbox.TabIndex = 9;
+            // 
+            // AddOrnamentButton
+            // 
+            this.AddOrnamentButton.Enabled = false;
+            this.AddOrnamentButton.Location = new System.Drawing.Point(699, 29);
+            this.AddOrnamentButton.Name = "AddOrnamentButton";
+            this.AddOrnamentButton.Size = new System.Drawing.Size(116, 23);
+            this.AddOrnamentButton.TabIndex = 10;
+            this.AddOrnamentButton.Text = "Add Ornament";
+            this.AddOrnamentButton.UseVisualStyleBackColor = true;
+            this.AddOrnamentButton.Click += new System.EventHandler(this.AddOrnamentButton_Click);
             // 
             // DrawingApp
             // 
@@ -172,6 +213,9 @@
         private System.Windows.Forms.Button undo_button;
         private System.Windows.Forms.Button UngroupButton;
         private System.Windows.Forms.Button GroupButton;
+        private System.Windows.Forms.Button AddOrnamentButton;
+        private System.Windows.Forms.TextBox OrnamentTextbox;
+        private System.Windows.Forms.ComboBox OrnamentSideCombo;
     }
 }
 
