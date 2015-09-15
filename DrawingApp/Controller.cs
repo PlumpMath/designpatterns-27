@@ -112,6 +112,7 @@ namespace DrawingApp
             openFielDialog.RestoreDirectory = true;
             List<GroupComponent> elements = new List<GroupComponent>();
             List<Tuple<int, GroupComposite>> proceedingSpaces = new List<Tuple<int, GroupComposite>>();
+            List<OrnamentBase> Ornaments = new List<OrnamentBase>();
             if (openFielDialog.ShowDialog() == DialogResult.OK)
             {
                 using (StreamReader reader = new StreamReader(openFielDialog.OpenFile()))
@@ -148,17 +149,28 @@ namespace DrawingApp
                             {
                                 elements.Add(newGroup);
                             }
+                            //When new ornaments are found they are added to the next found shape or group.
+                            if (Ornaments.Count != 0)
+                            {
+                                foreach (OrnamentBase orn in Ornaments)
+                                {
+                                    newGroup.AddOrnament(orn);
+                                }
+                                //Clear the list so that new ornaments can be added later.
+                                Ornaments.Clear();
+                            }
                         }
                         else if (newline[counter] == "rectangle" || newline[counter] == "ellipse")
                         {
                             BasisFiguur newShape = null;
                             if (newline[counter] == "rectangle") {
                                 newShape = new BasisFiguur(BasisFiguur.Shapes.RECTANGLE);
-
+                                newShape.setName("rectangle");
                             }
                             else if(newline[counter] == "ellipse")
                             {
                                 newShape = new BasisFiguur(BasisFiguur.Shapes.ELLIPSE);
+                                newShape.setName("ellipse");
                             }
                             if (newShape != null)
                             {
@@ -186,6 +198,53 @@ namespace DrawingApp
                                 {
                                     elements.Add(newShape);
                                 }
+                            }
+                            //When new ornaments are found they are added to the next found shape or group.
+                            if (Ornaments.Count != 0)
+                            {
+                                foreach(OrnamentBase orn in Ornaments)
+                                {
+                                    newShape.AddOrnament(orn);
+                                }
+                                //Clear the list so that new ornaments can be added later.
+                                Ornaments.Clear();
+                            }
+                        }
+                        else if (newline[counter] == "ornament")
+                        {
+                            string textInput = newline[counter + 2];
+                            Console.WriteLine(textInput);
+                            //Remove the extra " at the beginning and end of the string.
+                            textInput.TrimEnd();
+                            textInput = textInput.TrimEnd(new char[] { '\"'});
+                            textInput = textInput.TrimStart(new char[] { '\"' });
+                            switch (newline[counter + 1])
+                            {
+                                case "top":
+                                    //Create a new ornament and set the text.
+                                    Ornament newOr = new Ornament(textInput);
+                                    //This ornament will be a top ornament.
+                                    TopOrnament newTopOrnament = new TopOrnament(newOr);
+                                    //Add the new ornament to the list. After which it can be added to the next shape or group.
+                                    Ornaments.Add(newTopOrnament);
+                                    break;
+                                case "bottom":
+                                    Ornament newOrna = new Ornament(textInput);
+                                    ButtomOrnament newBottomOrnament = new ButtomOrnament(newOrna);
+                                    Ornaments.Add(newBottomOrnament);
+                                    break;
+                                case "left":
+                                    Ornament newOrnam = new Ornament(textInput);
+                                    LeftOrnament newLeftOrnament = new LeftOrnament(newOrnam);
+                                    Ornaments.Add(newLeftOrnament);
+                                    break;
+                                case "right":
+                                    Ornament newOrname = new Ornament(textInput);
+                                    RightOrnament newRightOrnament = new RightOrnament(newOrname);
+                                    Ornaments.Add(newRightOrnament);
+                                    break;
+                                default:
+                                    break;
                             }
                         }
                     }

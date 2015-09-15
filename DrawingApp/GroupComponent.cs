@@ -34,10 +34,10 @@ namespace DrawingApp
         public abstract void SetSizY(int sizY);
 
         public abstract Color getBackColor();
-        public abstract void setBackColor(Color g);
+        public abstract void setBackColor(Color c);
         public abstract void setName(string name);
 
-        public abstract void AddOrnament(string text, string side);
+        public abstract void AddOrnament(OrnamentBase ornament);
         public abstract void DrawOrnaments(Graphics g);
     }
 }

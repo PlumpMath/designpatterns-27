@@ -535,7 +535,35 @@ namespace DrawingApp
             {
                 if (currentShape.isSelected())
                 {
-                    currentShape.AddOrnament(OrnamentTextbox.Text,OrnamentSideCombo.SelectedItem.ToString());
+                    string textInput = OrnamentTextbox.Text;
+                    switch (OrnamentSideCombo.SelectedItem.ToString())
+                    {
+                        case "Top":
+                            //Create a new ornament and set the text.
+                            Ornament newOr = new Ornament(textInput);
+                            //This ornament will be a top ornament.
+                            TopOrnament newTopOrnament = new TopOrnament(newOr);
+                            //Add the new ornament to the list. After which it can be drawn or saved.
+                            currentShape.AddOrnament(newTopOrnament);
+                            break;
+                        case "Bottom":
+                            Ornament newOrna = new Ornament(textInput);
+                            ButtomOrnament newBottomOrnament = new ButtomOrnament(newOrna);
+                            currentShape.AddOrnament(newBottomOrnament);
+                            break;
+                        case "Left":
+                            Ornament newOrnam = new Ornament(textInput);
+                            LeftOrnament newLeftOrnament = new LeftOrnament(newOrnam);
+                            currentShape.AddOrnament(newLeftOrnament);
+                            break;
+                        case "Right":
+                            Ornament newOrname = new Ornament(textInput);
+                            RightOrnament newRightOrnament = new RightOrnament(newOrname);
+                            currentShape.AddOrnament(newRightOrnament);
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
             this.Refresh();
