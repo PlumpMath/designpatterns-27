@@ -43,6 +43,10 @@ namespace DrawingApp
             {
                 controller.UnGroupShapes(shapesToUnGroup);
             }
+            public void AddOrnament(GroupComponent ornament, GroupComponent shapecomponent)
+            {
+                controller.AddOrnament(ornament, shapecomponent);
+            }
             public void ToggleSelect(BasisFiguur shape)
             {
                 controller.ToggleSelect(shape);
@@ -269,28 +273,15 @@ namespace DrawingApp
         {
             Graphics g = e.Graphics;
 
-            //While painting the app needs to redraw every shape in the shapequeue.
-            List<BasisFiguur> allShapes = this.mainWindow.GetShapes();
-            foreach (BasisFiguur currentShape in allShapes)
-            {
-                Brush b = new SolidBrush(currentShape.getBackColor());
-                Rectangle r = new Rectangle(currentShape.GetPosX(), currentShape.GetPosY(), currentShape.GetSizX(), currentShape.GetSizY());
-                currentShape.strategy.Draw(e, b, r);
-            }
-
             foreach (GroupComponent currentComponent in mainWindow.GetGroups())
             {
-                //Draw every ornament on every GroupComponent.
-                currentComponent.DrawOrnaments(g);
-                if (currentComponent.isSelected())
-                {
-                    g.DrawRectangle(selected_pen, currentComponent.GetMinX(), currentComponent.GetMinY(), currentComponent.GetMaxX() - currentComponent.GetMinX(), currentComponent.GetMaxY() - currentComponent.GetMinY());                }
+                currentComponent.Draw(e);
             }
 
             //And an outline needs to be drawn as well to show a new shape is being created.
             foreach (BasisFiguur currentOutline in outlines)
             {
-                currentOutline.strategy.Draw(e, new SolidBrush(Color.Black), new Rectangle(currentOutline.GetPosX(), currentOutline.GetPosY(), currentOutline.GetSizX(), currentOutline.GetSizY()));
+                currentOutline.strategy.Draw(e, new SolidBrush(Color.Black), new Rectangle(currentOutline.GetPosX(), currentOutline.GetPosY(), currentOutline.GetSizX(), currentOutline.GetSizY()), false);
             }
             //Empty the outlines once they've all been drawn.
             outlines.Clear();
@@ -531,41 +522,65 @@ namespace DrawingApp
 
         private void AddOrnamentButton_Click(object sender, EventArgs e)
         {
-            foreach (GroupComponent currentShape in this.mainWindow.GetGroups())
-            {
-                if (currentShape.isSelected())
+            List<GroupComponent> newList = this.mainWindow.GetGroups();
+            Console.WriteLine(newList.Count);
+            //foreach (var currentShape1 in newList)
+                for (int i = 0; i < newList.Count;i++ )
                 {
-                    string textInput = OrnamentTextbox.Text;
-                    switch (OrnamentSideCombo.SelectedItem.ToString())
-                    {
-                        case "Top":
-                            //Create a new ornament and set the text.
-                            Ornament newOr = new Ornament(textInput);
-                            //This ornament will be a top ornament.
-                            TopOrnament newTopOrnament = new TopOrnament(newOr);
-                            //Add the new ornament to the list. After which it can be drawn or saved.
-                            currentShape.AddOrnament(newTopOrnament);
-                            break;
-                        case "Bottom":
-                            Ornament newOrna = new Ornament(textInput);
-                            ButtomOrnament newBottomOrnament = new ButtomOrnament(newOrna);
-                            currentShape.AddOrnament(newBottomOrnament);
-                            break;
-                        case "Left":
-                            Ornament newOrnam = new Ornament(textInput);
-                            LeftOrnament newLeftOrnament = new LeftOrnament(newOrnam);
-                            currentShape.AddOrnament(newLeftOrnament);
-                            break;
-                        case "Right":
-                            Ornament newOrname = new Ornament(textInput);
-                            RightOrnament newRightOrnament = new RightOrnament(newOrname);
-                            currentShape.AddOrnament(newRightOrnament);
-                            break;
-                        default:
-                            break;
+                    GroupComponent currentShape = newList[i];
+                        if (currentShape.isSelected())
+                        {
+                            string textInput = OrnamentTextbox.Text;
+                            Font mainFont = new Font("Arial", 16);
+                            SizeF stringSize = new SizeF();
+                            Graphics g = this.CreateGraphics();
+                            stringSize = g.MeasureString(textInput, mainFont, 200);
+                            switch (OrnamentSideCombo.SelectedItem.ToString())
+                            {
+                                case "Top":
+                                    //Create a new ornament and set the text.
+                                    Ornament newOr = new Ornament(textInput);
+                                    //This ornament will be a top ornament.
+                                    TopOrnament newTopOrnament = new TopOrnament(newOr);
+                                    //Add the new ornament to the list. After which it can be drawn or saved.
+                                    //currentShape.AddOrnament(newTopOrnament);
+
+                                    newTopOrnament.SetPosX((int)(currentShape.GetPosX() + (currentShape.GetSizX() / 2) - (stringSize.Width / 2)));
+                                    newTopOrnament.SetPosY((int)(currentShape.GetPosY() - (stringSize.Height / 2)));
+                                    mainWindow.AddOrnament(newTopOrnament, currentShape);
+                                    break;
+                                case "Bottom":
+                                    Ornament newOrna = new Ornament(textInput);
+                                    ButtomOrnament newBottomOrnament = new ButtomOrnament(newOrna);
+
+                                    newBottomOrnament.SetPosX((int)(currentShape.GetPosX() + (currentShape.GetSizX() / 2) - (stringSize.Width / 2)));
+                                    newBottomOrnament.SetPosY((int)((currentShape.GetPosY() + currentShape.GetSizY()) - (stringSize.Height / 2)));
+
+                                    mainWindow.AddOrnament(newBottomOrnament, currentShape);
+                                    break;
+                                case "Left":
+                                    Ornament newOrnam = new Ornament(textInput);
+                                    LeftOrnament newLeftOrnament = new LeftOrnament(newOrnam);
+
+                                    newLeftOrnament.SetPosX((int)(currentShape.GetPosX() - (stringSize.Width / 2)));
+                                    newLeftOrnament.SetPosY((int)(currentShape.GetPosY() + (currentShape.GetSizY() / 2) - (stringSize.Height / 2)));
+
+                                    mainWindow.AddOrnament(newLeftOrnament, currentShape);
+                                    break;
+                                case "Right":
+                                    Ornament newOrname = new Ornament(textInput);
+                                    RightOrnament newRightOrnament = new RightOrnament(newOrname);
+
+                                    newRightOrnament.SetPosX((int)((currentShape.GetPosX() + currentShape.GetSizX()) - (stringSize.Width / 2)));
+                                    newRightOrnament.SetPosY((int)(currentShape.GetPosY() + (currentShape.GetSizY() / 2) - (stringSize.Height / 2)));
+
+                                    mainWindow.AddOrnament(newRightOrnament, currentShape);
+                                    break;
+                                default:
+                                    break;
+                            }
                     }
                 }
-            }
             this.Refresh();
         }
     }

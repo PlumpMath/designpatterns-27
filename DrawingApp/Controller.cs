@@ -96,12 +96,17 @@ namespace DrawingApp
         public void AddShape(BasisFiguur shape)
         {
             groupList.Add(shape);
-            shapeList.Add(shape);
             Display();
         }
         public void RemoveShape(BasisFiguur shape)
         {
             shapeList.Remove(shape);
+        }
+        public void AddOrnament(GroupComponent ornament, GroupComponent shapegroup)
+        {
+            groupList.Remove(shapegroup);
+            ornament.Add(shapegroup);
+            groupList.Add(ornament);
         }
         public void LoadFile()
         {
@@ -149,16 +154,7 @@ namespace DrawingApp
                             {
                                 elements.Add(newGroup);
                             }
-                            //When new ornaments are found they are added to the next found shape or group.
-                            if (Ornaments.Count != 0)
-                            {
-                                foreach (OrnamentBase orn in Ornaments)
-                                {
-                                    newGroup.AddOrnament(orn);
-                                }
-                                //Clear the list so that new ornaments can be added later.
-                                Ornaments.Clear();
-                            }
+
                         }
                         else if (newline[counter] == "rectangle" || newline[counter] == "ellipse")
                         {
@@ -198,16 +194,6 @@ namespace DrawingApp
                                 {
                                     elements.Add(newShape);
                                 }
-                            }
-                            //When new ornaments are found they are added to the next found shape or group.
-                            if (Ornaments.Count != 0)
-                            {
-                                foreach(OrnamentBase orn in Ornaments)
-                                {
-                                    newShape.AddOrnament(orn);
-                                }
-                                //Clear the list so that new ornaments can be added later.
-                                Ornaments.Clear();
                             }
                         }
                         else if (newline[counter] == "ornament")

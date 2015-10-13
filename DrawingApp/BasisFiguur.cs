@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace DrawingApp
 {
@@ -169,16 +170,12 @@ namespace DrawingApp
             this.sizY = sizY;
         }
 
-        public override void AddOrnament(OrnamentBase ornament)
+
+        public override void Draw(PaintEventArgs e)
         {
-            Ornaments.Add(ornament);
-        }
-        public override void DrawOrnaments(Graphics g)
-        {
-            foreach (OrnamentBase orn in Ornaments)
-            {
-                orn.drawOrnament(GetMinX(), GetMinY(), GetSizX(), GetSizY(), g);
-            }
+            Brush b = new SolidBrush(getBackColor());
+            Rectangle r = new Rectangle(GetPosX(), GetPosY(), GetSizX(), GetSizY());
+            strategy.Draw(e, b, r, isSelected());
         }
     }
 }

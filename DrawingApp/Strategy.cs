@@ -10,7 +10,7 @@ namespace DrawingApp
 {
     interface Strategy
     {
-        void Draw(PaintEventArgs e, Brush b, Rectangle r);
+        void Draw(PaintEventArgs e, Brush b, Rectangle r, bool selected);
         string toString();
     }
 }

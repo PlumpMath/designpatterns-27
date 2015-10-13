@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Windows.Forms;
 using System.IO;
 
 namespace DrawingApp
 {
-    abstract class GroupComponent
+    public abstract class GroupComponent
     {
         public string name;
 
@@ -36,8 +38,7 @@ namespace DrawingApp
         public abstract Color getBackColor();
         public abstract void setBackColor(Color c);
         public abstract void setName(string name);
+        public abstract void Draw(PaintEventArgs e);
 
-        public abstract void AddOrnament(OrnamentBase ornament);
-        public abstract void DrawOrnaments(Graphics g);
     }
 }

@@ -10,7 +10,6 @@ namespace DrawingApp
     class GroupComposite : GroupComponent
     {
         private List<GroupComponent> shapes = new List<GroupComponent>();
-        public List<OrnamentBase> Ornaments = new List<OrnamentBase>();
 
         public override void Add(GroupComponent e)
         {
@@ -32,11 +31,6 @@ namespace DrawingApp
         }
         public override void WriteToFile(System.IO.StreamWriter writer, int depth)
         {
-            //Write every ornament to the file BEFORE the group is written.
-            foreach(OrnamentBase orn in Ornaments)
-            {
-                writer.WriteLine(new String(' ', depth) + "ornament " + orn.getSide() + " \"" + orn.getText() + "\"");
-            }
 
             writer.WriteLine(new String(' ', depth) + name);
             foreach (GroupComponent component in shapes)
@@ -184,17 +178,9 @@ namespace DrawingApp
             this.name = name;
         }
 
-        public override void AddOrnament(OrnamentBase ornament)
+        public override void Draw(System.Windows.Forms.PaintEventArgs e)
         {
-            Ornaments.Add(ornament);
-        }
-
-        public override void DrawOrnaments(Graphics g)
-        {
-            foreach (OrnamentBase orn in Ornaments)
-            {
-                orn.drawOrnament(GetMinX(), GetMinY(), GetMaxX() - GetMinX(), GetMaxY() - GetMinY(), g);
-            }
+            throw new NotImplementedException();
         }
     }
 }
