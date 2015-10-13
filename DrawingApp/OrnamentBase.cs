@@ -94,7 +94,7 @@ namespace DrawingApp
 
         public override void setSelected(bool selected)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public override int Size()

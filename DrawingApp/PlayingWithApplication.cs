@@ -56,10 +56,6 @@ namespace DrawingApp
             {
                 return commandstack;
             }
-            public List<BasisFiguur> GetShapes()
-            {
-                return controller.GetShapes();
-            }
             public List<GroupComponent> GetGroups()
             {
                 return controller.GetGroups();
@@ -157,10 +153,11 @@ namespace DrawingApp
             //This is the code to select a shape while Move or Resize is selected.
             if (mode == "Move" | mode == "Resize")
             {
+                Point mouse_pos = this.PointToClient(Cursor.Position);
                 foreach (GroupComponent currentShape in this.mainWindow.GetGroups())
                 {
                     Rectangle tempShape = new Rectangle(currentShape.GetMinX(), currentShape.GetMinY(), currentShape.GetMaxX() - currentShape.GetMinX(), currentShape.GetMaxY() - currentShape.GetMinY());
-                    if (tempShape.Contains(initialMousePos))
+                    if (tempShape.Contains(initialMousePos) && mouse_pos == initialMousePos)
                     {
                         currentShape.ToggleSelected();
                         break;
@@ -297,26 +294,18 @@ namespace DrawingApp
                 int size_y = mouse_pos.Y - initialMousePos.Y;
                 if (mode == "Move")
                 {
-                    foreach (BasisFiguur current_shape in this.mainWindow.GetShapes())
+                    foreach (GroupComponent current_shape in this.mainWindow.GetGroups())
                     {
                         if (current_shape.isSelected())
                         {
                             //Add an outline to show where the shape will be moved to.
                             BasisFiguur newOutline = null;
-                            
-                            if (current_shape.strategy.toString() == "rectangle")
-                            {
-                                newOutline = new BasisFiguur(BasisFiguur.Shapes.RECTANGLE);
-                                newOutline.setPosSiz(current_shape.GetMinX() + (mouse_pos.X - initialMousePos.X), current_shape.GetMinY() + (mouse_pos.Y - initialMousePos.Y), current_shape.GetMaxX() - current_shape.GetMinX(), current_shape.GetMaxY() - current_shape.GetMinY());
-                                newOutline.setSelected(false);
-                                newOutline.setBackColor(Color.Black);
-                            }else if(current_shape.strategy.toString() == "ellipse")
-                            {
-                                newOutline = new BasisFiguur(BasisFiguur.Shapes.ELLIPSE);
-                                newOutline.setPosSiz(current_shape.GetMinX() + (mouse_pos.X - initialMousePos.X), current_shape.GetMinY() + (mouse_pos.Y - initialMousePos.Y), current_shape.GetMaxX() - current_shape.GetMinX(), current_shape.GetMaxY() - current_shape.GetMinY());
-                                newOutline.setSelected(false);
-                                newOutline.setBackColor(Color.Black);
-                            }
+
+                            newOutline = new BasisFiguur(BasisFiguur.Shapes.RECTANGLE);
+                            newOutline.setPosSiz(current_shape.GetMinX() + (mouse_pos.X - initialMousePos.X), current_shape.GetMinY() + (mouse_pos.Y - initialMousePos.Y), current_shape.GetMaxX() - current_shape.GetMinX(), current_shape.GetMaxY() - current_shape.GetMinY());
+                            newOutline.setSelected(false);
+                            newOutline.setBackColor(Color.Black);
+
                             if (newOutline != null)
                             {
                                 outlines.Add(newOutline);
@@ -326,26 +315,16 @@ namespace DrawingApp
                 }
                 if (mode == "Resize")
                 {
-                    foreach (BasisFiguur current_shape in this.mainWindow.GetShapes())
+                    foreach (GroupComponent current_shape in this.mainWindow.GetGroups())
                     {
                         if (current_shape.isSelected())
                         {
                             //Change the size of every shape that has the is_selected boolean active.
                             BasisFiguur newOutline = null;
-                            if(current_shape.strategy.toString() == "rectangle")
-                            {
-                                newOutline = new BasisFiguur(BasisFiguur.Shapes.RECTANGLE);
-                                newOutline.setPosSiz(current_shape.GetPosX(), current_shape.GetPosY(), mouse_pos.X - current_shape.GetPosX(), mouse_pos.Y - current_shape.GetPosY());
-                                newOutline.setSelected(false);
-                                newOutline.setBackColor(Color.Black);
-
-                            }else if(current_shape.strategy.toString() == "ellipse")
-                            {
-                                newOutline = new BasisFiguur(BasisFiguur.Shapes.ELLIPSE);
-                                newOutline.setPosSiz(current_shape.GetPosX(), current_shape.GetPosY(), mouse_pos.X - current_shape.GetPosX(), mouse_pos.Y - current_shape.GetPosY());
-                                newOutline.setSelected(false);
-                                newOutline.setBackColor(Color.Black);
-                            }
+                            newOutline = new BasisFiguur(BasisFiguur.Shapes.RECTANGLE);
+                            newOutline.setPosSiz(current_shape.GetMinX(), current_shape.GetMinY(), mouse_pos.X - current_shape.GetMinX(), mouse_pos.Y - current_shape.GetMinY());
+                            newOutline.setSelected(false);
+                            newOutline.setBackColor(Color.Black);
                             if (newOutline != null)
                             {
                                 outlines.Add(newOutline);
@@ -442,7 +421,7 @@ namespace DrawingApp
             ComboBox comboBox = (ComboBox)sender;
             if (mode != (string)comboBox.SelectedItem)
             {
-                foreach (BasisFiguur currentshape in this.mainWindow.GetShapes())
+                foreach (GroupComponent currentshape in this.mainWindow.GetGroups())
                 {
                     currentshape.setSelected (false);
                 }
@@ -471,21 +450,23 @@ namespace DrawingApp
             {
                 if (mode == "Move")
                 {
-                    foreach (BasisFiguur currentShape in this.mainWindow.GetShapes())
+                    foreach (GroupComponent currentShape in this.mainWindow.GetGroups())
                     {
-                        if (currentShape.isSelected())
+                        if (currentShape.isSelected() && currentShape is BasisFiguur)
                         {
-                            mainWindow.MoveShape(currentShape, currentShape.GetMinX() + (finalMousePos.X - initialMousePos.X), currentShape.GetMinY() + (finalMousePos.Y - initialMousePos.Y));
+                            BasisFiguur b = (BasisFiguur)currentShape;
+                            mainWindow.MoveShape(b, currentShape.GetMinX() + (finalMousePos.X - initialMousePos.X), currentShape.GetMinY() + (finalMousePos.Y - initialMousePos.Y));
                         }
                     }
                 }
                 else if (mode == "Resize")
                 {
-                    foreach (BasisFiguur currentShape in this.mainWindow.GetShapes())
+                    foreach (GroupComponent currentShape in this.mainWindow.GetGroups())
                     {
-                        if (currentShape.isSelected())
+                        if (currentShape.isSelected() && currentShape is BasisFiguur)
                         {
-                            mainWindow.ResizeShape(currentShape, finalMousePos.X - currentShape.GetMinX(), finalMousePos.Y - currentShape.GetMinY());
+                            BasisFiguur b = (BasisFiguur)currentShape;
+                            mainWindow.ResizeShape(b, finalMousePos.X - currentShape.GetMinX(), finalMousePos.Y - currentShape.GetMinY());
                         }
                     }
                 }

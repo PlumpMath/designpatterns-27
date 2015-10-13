@@ -11,7 +11,6 @@ namespace DrawingApp
 {
     class Controller
     {
-        private List<BasisFiguur> shapeList = new List<BasisFiguur>();
         private List<GroupComponent> groupList = new List<GroupComponent>();
         Random Random = new Random();
         int groupCounter = 0;
@@ -83,24 +82,19 @@ namespace DrawingApp
             }
         }
 
-        public List<BasisFiguur> GetShapes()
-        {
-            return shapeList;
-        }
-
         public List<GroupComponent> GetGroups()
         {
             return groupList;
         }
 
-        public void AddShape(BasisFiguur shape)
+        public void AddShape(GroupComponent shape)
         {
             groupList.Add(shape);
             Display();
         }
-        public void RemoveShape(BasisFiguur shape)
+        public void RemoveShape(GroupComponent shape)
         {
-            shapeList.Remove(shape);
+            groupList.Remove(shape);
         }
         public void AddOrnament(GroupComponent ornament, GroupComponent shapegroup)
         {
@@ -174,7 +168,7 @@ namespace DrawingApp
                                 newShape.setBackColor(randomColor);
                                 newShape.setSelected(false);
                                 //Shape newShape = new Shape(newline[counter], randomColor, , false);
-                                shapeList.Add(newShape);
+                                groupList.Add(newShape);
                                 //If there are spaces before the shape it means the shape in one or more groups.
                                 if (counter > 0)
                                 {

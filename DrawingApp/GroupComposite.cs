@@ -120,7 +120,10 @@ namespace DrawingApp
 
         public override void setSelected(bool selected)
         {
-            throw new NotImplementedException();
+            foreach (GroupComponent component in shapes)
+            {
+                component.setSelected(selected);
+            }
         }
 
         public override Color getBackColor()
@@ -180,7 +183,10 @@ namespace DrawingApp
 
         public override void Draw(System.Windows.Forms.PaintEventArgs e)
         {
-            throw new NotImplementedException();
+            foreach (GroupComponent component in shapes)
+            {
+                component.Draw(e);
+            }
         }
     }
 }

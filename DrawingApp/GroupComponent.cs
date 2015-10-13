@@ -19,6 +19,7 @@ namespace DrawingApp
         public abstract void ToggleSelected();
         public abstract bool isSelected();
         public abstract void setSelected(bool selected);
+        
         public abstract int Size();
         public abstract int GetMaxX();
         public abstract int GetMaxY();
