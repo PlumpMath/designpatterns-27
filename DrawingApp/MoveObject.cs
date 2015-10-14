@@ -2,11 +2,11 @@
 {
     class MoveObject : Visitable
     {
-        private BasisFiguur shape;
+        private GroupComponent shape;
         private int new_x_pos;
         private int new_y_pos;
 
-        public MoveObject(BasisFiguur shape, int new_x_pos, int new_y_pos)
+        public MoveObject(GroupComponent shape, int new_x_pos, int new_y_pos)
         {
             this.shape = shape;
             this.new_x_pos = new_x_pos;
@@ -17,7 +17,7 @@
         {
             visitor.visit(this);
         }
-        public BasisFiguur getShape()
+        public GroupComponent getShape()
         {
             return shape;
         }

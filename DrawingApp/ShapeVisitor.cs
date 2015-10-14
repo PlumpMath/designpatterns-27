@@ -13,7 +13,7 @@ namespace DrawingApp
         public void visit(MoveObject moveObject)
         {
             //Finnally actually move the shape to the new position.
-            BasisFiguur currentShape = moveObject.getShape();
+            GroupComponent currentShape = moveObject.getShape();
             currentShape.SetPosX(moveObject.getX());
             currentShape.SetPosY(moveObject.getY());
         }

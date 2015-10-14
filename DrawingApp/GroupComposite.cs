@@ -158,12 +158,18 @@ namespace DrawingApp
 
         public override void SetPosX(int posX)
         {
-            throw new NotImplementedException();
+            foreach (GroupComponent component in shapes)
+            {
+                component.SetPosX(posX);
+            }
         }
 
         public override void SetPosY(int posY)
         {
-            throw new NotImplementedException();
+            foreach (GroupComponent component in shapes)
+            {
+                component.SetPosY(posY);
+            }
         }
 
         public override void SetSizX(int sizX)
@@ -186,6 +192,14 @@ namespace DrawingApp
             foreach (GroupComponent component in shapes)
             {
                 component.Draw(e);
+            }
+            //Draw an outline if the group is selected.
+            //After the componentdraw so that the outline will be on top of the shapes.
+            if (isSelected())
+            {
+                Rectangle r = new Rectangle(GetMinX(), GetMinY(), GetMaxX() - GetMinX(), GetMaxY() - GetMinY());
+                Pen selected_pen = new Pen(Color.Black, 2);
+                e.Graphics.DrawRectangle(selected_pen, r);
             }
         }
     }

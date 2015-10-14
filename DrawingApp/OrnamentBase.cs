@@ -89,7 +89,15 @@ namespace DrawingApp
 
         public override bool isSelected()
         {
-            return false;
+            bool selected = false;
+            foreach (GroupComponent component in components)
+            {
+                if (component.isSelected())
+                {
+                    selected = true;
+                }
+            }
+            return selected;
         }
 
         public override void setSelected(bool selected)
@@ -219,23 +227,7 @@ namespace DrawingApp
                 component.Draw(e);
             }
 
-            switch (this.getSide())
-            {
-                case "top":
-                    e.Graphics.DrawString(getText(), mainFont, fontColor, GetPosX(), GetPosY());
-                    break;
-                case "bottom":
-                    e.Graphics.DrawString(getText(), mainFont, fontColor, GetPosX(), GetPosY());
-                    break;
-                case "left":
-                    e.Graphics.DrawString(getText(), mainFont, fontColor, GetPosX(), GetPosY());
-                    break;
-                case "right":
-                    e.Graphics.DrawString(getText(), mainFont, fontColor, GetPosX(), GetPosY());
-                    break;
-                default:
-                    break;
-            }
+         e.Graphics.DrawString(getText(), mainFont, fontColor, GetPosX(), GetPosY());
 
         }
     }

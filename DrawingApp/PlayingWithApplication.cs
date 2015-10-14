@@ -89,7 +89,7 @@ namespace DrawingApp
                 // Add command to command stack
                 commandstack.Push(command);
             }
-            public void MoveShape(BasisFiguur shape, int new_x_pos, int new_y_pos)
+            public void MoveShape(GroupComponent shape, int new_x_pos, int new_y_pos)
             {
                 // Create command operation and execute it
                 UndoableCommand command = new MoveShapeCommand(controller, shapeVisitor, shape, new_x_pos, new_y_pos);
@@ -452,10 +452,9 @@ namespace DrawingApp
                 {
                     foreach (GroupComponent currentShape in this.mainWindow.GetGroups())
                     {
-                        if (currentShape.isSelected() && currentShape is BasisFiguur)
+                        if (currentShape.isSelected())
                         {
-                            BasisFiguur b = (BasisFiguur)currentShape;
-                            mainWindow.MoveShape(b, currentShape.GetMinX() + (finalMousePos.X - initialMousePos.X), currentShape.GetMinY() + (finalMousePos.Y - initialMousePos.Y));
+                            mainWindow.MoveShape(currentShape, currentShape.GetMinX() + (finalMousePos.X - initialMousePos.X), currentShape.GetMinY() + (finalMousePos.Y - initialMousePos.Y));
                         }
                     }
                 }
