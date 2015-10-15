@@ -177,5 +177,25 @@ namespace DrawingApp
             Rectangle r = new Rectangle(GetPosX(), GetPosY(), GetSizX(), GetSizY());
             strategy.Draw(e, b, r, isSelected());
         }
+
+        public override void SetPosXOffset(int posXOffset)
+        {
+            this.SetPosX(GetPosX() + posXOffset);
+        }
+
+        public override void SetPosYOffset(int posYOffset)
+        {
+            this.SetPosY(GetPosY() + posYOffset);
+        }
+
+        public override void SetSizXOffset(int sizXOffset)
+        {
+            this.SetSizX(GetSizX() + sizXOffset);
+        }
+
+        public override void SetSizYOffset(int sizYOffset)
+        {
+            this.SetSizY(GetSizY() + sizYOffset);
+        }
     }
 }

@@ -89,15 +89,15 @@ namespace DrawingApp
                 // Add command to command stack
                 commandstack.Push(command);
             }
-            public void MoveShape(GroupComponent shape, int new_x_pos, int new_y_pos)
+            public void MoveShape(GroupComponent shape, int x_offset, int y_offset)
             {
                 // Create command operation and execute it
-                UndoableCommand command = new MoveShapeCommand(controller, shapeVisitor, shape, new_x_pos, new_y_pos);
+                UndoableCommand command = new MoveShapeCommand(controller, shapeVisitor, shape, x_offset, y_offset);
                 command.Execute();
                 // Add command to command stack
                 commandstack.Push(command);
             }
-            public void ResizeShape(BasisFiguur shape, int new_x_size, int new_y_size)
+            public void ResizeShape(GroupComponent shape, int new_x_size, int new_y_size)
             {
                 // Create command operation and execute it
                 UndoableCommand command = new ResizeShapeCommand(controller, shapeVisitor, shape, new_x_size, new_y_size);
@@ -322,7 +322,7 @@ namespace DrawingApp
                             //Change the size of every shape that has the is_selected boolean active.
                             BasisFiguur newOutline = null;
                             newOutline = new BasisFiguur(BasisFiguur.Shapes.RECTANGLE);
-                            newOutline.setPosSiz(current_shape.GetMinX(), current_shape.GetMinY(), mouse_pos.X - current_shape.GetMinX(), mouse_pos.Y - current_shape.GetMinY());
+                            newOutline.setPosSiz(current_shape.GetMinX(), current_shape.GetMinY(), (current_shape.GetMaxX() + (mouse_pos.X - initialMousePos.X)) - current_shape.GetMinX(), (current_shape.GetMaxY() + (mouse_pos.Y - initialMousePos.Y)) - current_shape.GetMinY());
                             newOutline.setSelected(false);
                             newOutline.setBackColor(Color.Black);
                             if (newOutline != null)
@@ -454,7 +454,8 @@ namespace DrawingApp
                     {
                         if (currentShape.isSelected())
                         {
-                            mainWindow.MoveShape(currentShape, currentShape.GetMinX() + (finalMousePos.X - initialMousePos.X), currentShape.GetMinY() + (finalMousePos.Y - initialMousePos.Y));
+                            mainWindow.MoveShape(currentShape, finalMousePos.X - initialMousePos.X, finalMousePos.Y - initialMousePos.Y);
+                            //mainWindow.MoveShape(currentShape, currentShape.GetMinX() + (finalMousePos.X - initialMousePos.X), currentShape.GetMinY() + (finalMousePos.Y - initialMousePos.Y));
                         }
                     }
                 }
@@ -462,10 +463,9 @@ namespace DrawingApp
                 {
                     foreach (GroupComponent currentShape in this.mainWindow.GetGroups())
                     {
-                        if (currentShape.isSelected() && currentShape is BasisFiguur)
+                        if (currentShape.isSelected())
                         {
-                            BasisFiguur b = (BasisFiguur)currentShape;
-                            mainWindow.ResizeShape(b, finalMousePos.X - currentShape.GetMinX(), finalMousePos.Y - currentShape.GetMinY());
+                            mainWindow.ResizeShape(currentShape, finalMousePos.X - initialMousePos.X, finalMousePos.Y - initialMousePos.Y);
                         }
                     }
                 }
@@ -523,18 +523,18 @@ namespace DrawingApp
                                     //This ornament will be a top ornament.
                                     TopOrnament newTopOrnament = new TopOrnament(newOr);
                                     //Add the new ornament to the list. After which it can be drawn or saved.
-                                    //currentShape.AddOrnament(newTopOrnament);
 
-                                    newTopOrnament.SetPosX((int)(currentShape.GetPosX() + (currentShape.GetSizX() / 2) - (stringSize.Width / 2)));
-                                    newTopOrnament.SetPosY((int)(currentShape.GetPosY() - (stringSize.Height / 2)));
+                                    newTopOrnament.SetPosX((int)(currentShape.GetMinX() + ((currentShape.GetMaxX() - currentShape.GetMinX()) / 2) - (stringSize.Width / 2)));
+                                    newTopOrnament.SetPosY((int)(currentShape.GetMinY() - (stringSize.Height / 2)));
+
                                     mainWindow.AddOrnament(newTopOrnament, currentShape);
                                     break;
                                 case "Bottom":
                                     Ornament newOrna = new Ornament(textInput);
                                     ButtomOrnament newBottomOrnament = new ButtomOrnament(newOrna);
 
-                                    newBottomOrnament.SetPosX((int)(currentShape.GetPosX() + (currentShape.GetSizX() / 2) - (stringSize.Width / 2)));
-                                    newBottomOrnament.SetPosY((int)((currentShape.GetPosY() + currentShape.GetSizY()) - (stringSize.Height / 2)));
+                                    newBottomOrnament.SetPosX((int)(currentShape.GetMinX() + ((currentShape.GetMaxX() - currentShape.GetMinX()) / 2) - (stringSize.Width / 2)));
+                                    newBottomOrnament.SetPosY((int)((currentShape.GetMinY() + (currentShape.GetMaxY() - currentShape.GetMinY())) - (stringSize.Height / 2)));
 
                                     mainWindow.AddOrnament(newBottomOrnament, currentShape);
                                     break;
@@ -542,8 +542,8 @@ namespace DrawingApp
                                     Ornament newOrnam = new Ornament(textInput);
                                     LeftOrnament newLeftOrnament = new LeftOrnament(newOrnam);
 
-                                    newLeftOrnament.SetPosX((int)(currentShape.GetPosX() - (stringSize.Width / 2)));
-                                    newLeftOrnament.SetPosY((int)(currentShape.GetPosY() + (currentShape.GetSizY() / 2) - (stringSize.Height / 2)));
+                                    newLeftOrnament.SetPosX((int)(currentShape.GetMinX() - (stringSize.Width / 2)));
+                                    newLeftOrnament.SetPosY((int)(currentShape.GetMinY() + ((currentShape.GetMaxY() - currentShape.GetMinY()) / 2) - (stringSize.Height / 2)));
 
                                     mainWindow.AddOrnament(newLeftOrnament, currentShape);
                                     break;
@@ -551,8 +551,8 @@ namespace DrawingApp
                                     Ornament newOrname = new Ornament(textInput);
                                     RightOrnament newRightOrnament = new RightOrnament(newOrname);
 
-                                    newRightOrnament.SetPosX((int)((currentShape.GetPosX() + currentShape.GetSizX()) - (stringSize.Width / 2)));
-                                    newRightOrnament.SetPosY((int)(currentShape.GetPosY() + (currentShape.GetSizY() / 2) - (stringSize.Height / 2)));
+                                    newRightOrnament.SetPosX((int)((currentShape.GetMinX() + (currentShape.GetMaxX() - currentShape.GetMinX()) - (stringSize.Width / 2))));
+                                    newRightOrnament.SetPosY((int)(currentShape.GetMinY() + ((currentShape.GetMaxY() - currentShape.GetMinY()) / 2) - (stringSize.Height / 2)));
 
                                     mainWindow.AddOrnament(newRightOrnament, currentShape);
                                     break;

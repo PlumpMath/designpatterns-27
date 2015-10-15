@@ -14,16 +14,16 @@ namespace DrawingApp
         {
             //Finnally actually move the shape to the new position.
             GroupComponent currentShape = moveObject.getShape();
-            currentShape.SetPosX(moveObject.getX());
-            currentShape.SetPosY(moveObject.getY());
+            currentShape.SetPosXOffset(moveObject.getX());
+            currentShape.SetPosYOffset(moveObject.getY());
         }
 
         public void visit(ResizeObject resizeObject)
         {
             //Resize the shape to the new dimentions.
-            BasisFiguur currentShape = resizeObject.getShape();
-            currentShape.SetSizX(resizeObject.getXSize());
-            currentShape.SetSizY(resizeObject.getYSize());
+            GroupComponent currentShape = resizeObject.getShape();
+            currentShape.SetSizXOffset(resizeObject.getXSize());
+            currentShape.SetSizYOffset(resizeObject.getYSize());
         }
 
         public void visit(WriteToFile writeToFile)

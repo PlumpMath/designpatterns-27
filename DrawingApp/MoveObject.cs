@@ -3,14 +3,14 @@
     class MoveObject : Visitable
     {
         private GroupComponent shape;
-        private int new_x_pos;
-        private int new_y_pos;
+        private int new_x_offset;
+        private int new_y_offset;
 
-        public MoveObject(GroupComponent shape, int new_x_pos, int new_y_pos)
+        public MoveObject(GroupComponent shape, int new_x_offset, int new_y_offset)
         {
             this.shape = shape;
-            this.new_x_pos = new_x_pos;
-            this.new_y_pos = new_y_pos;
+            this.new_x_offset = new_x_offset;
+            this.new_y_offset = new_y_offset;
         }
 
         public void accept(Visitor visitor)
@@ -23,11 +23,11 @@
         }
         public int getX()
         {
-            return new_x_pos;
+            return new_x_offset;
         }
         public int getY()
         {
-            return new_y_pos;
+            return new_y_offset;
         }
     }
 }

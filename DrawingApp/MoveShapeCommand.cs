@@ -11,29 +11,27 @@ namespace DrawingApp
         private GroupComponent shape;
         private Controller controller;
         private ShapeVisitor shapeVisitor;
-        private int old_pos_x;
-        private int old_pos_y;
-        private int new_pos_x;
-        private int new_pos_y;
+        private int new_x_offset;
+        private int new_y_offset;
 
-        public MoveShapeCommand(Controller controller, ShapeVisitor shapeVisitor, GroupComponent shape, int new_x_pos, int new_y_pos)
+        public MoveShapeCommand(Controller controller, ShapeVisitor shapeVisitor, GroupComponent shape, int x_offset, int y_offset)
         {
             this.controller = controller;
             this.shapeVisitor = shapeVisitor;
             this.shape = shape;
-            this.new_pos_x = this.old_pos_x = new_x_pos;
-            this.new_pos_y = this.old_pos_y = new_y_pos;
+            this.new_x_offset = x_offset;
+            this.new_y_offset = y_offset;
         }
 
         public override void Execute()
         {
-            MoveObject moveObject = new MoveObject( this.shape, this.new_pos_x, this.new_pos_y);
+            MoveObject moveObject = new MoveObject( this.shape, this.new_x_offset, this.new_y_offset);
             moveObject.accept(shapeVisitor);
         }
 
         public override void UnExecute()
         {
-            MoveObject moveObject = new MoveObject(this.shape, this.old_pos_x, this.old_pos_y);
+            MoveObject moveObject = new MoveObject(this.shape, -this.new_x_offset, -this.new_y_offset);
             moveObject.accept(shapeVisitor);
         }
     }

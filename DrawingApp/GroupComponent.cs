@@ -36,6 +36,11 @@ namespace DrawingApp
         public abstract void SetSizX(int sizX);
         public abstract void SetSizY(int sizY);
 
+        public abstract void SetPosXOffset(int posXOffset);
+        public abstract void SetPosYOffset(int posYOffset);
+        public abstract void SetSizXOffset(int sizXOffset);
+        public abstract void SetSizYOffset(int sizYOffset);
+
         public abstract Color getBackColor();
         public abstract void setBackColor(Color c);
         public abstract void setName(string name);

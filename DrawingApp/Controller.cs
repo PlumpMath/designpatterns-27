@@ -111,7 +111,6 @@ namespace DrawingApp
             openFielDialog.RestoreDirectory = true;
             List<GroupComponent> elements = new List<GroupComponent>();
             List<Tuple<int, GroupComposite>> proceedingSpaces = new List<Tuple<int, GroupComposite>>();
-            List<OrnamentBase> Ornaments = new List<OrnamentBase>();
             if (openFielDialog.ShowDialog() == DialogResult.OK)
             {
                 using (StreamReader reader = new StreamReader(openFielDialog.OpenFile()))
@@ -206,22 +205,22 @@ namespace DrawingApp
                                     //This ornament will be a top ornament.
                                     TopOrnament newTopOrnament = new TopOrnament(newOr);
                                     //Add the new ornament to the list. After which it can be added to the next shape or group.
-                                    Ornaments.Add(newTopOrnament);
+                                    groupList.Add(newTopOrnament);
                                     break;
                                 case "bottom":
                                     Ornament newOrna = new Ornament(textInput);
                                     ButtomOrnament newBottomOrnament = new ButtomOrnament(newOrna);
-                                    Ornaments.Add(newBottomOrnament);
+                                    groupList.Add(newBottomOrnament);
                                     break;
                                 case "left":
                                     Ornament newOrnam = new Ornament(textInput);
                                     LeftOrnament newLeftOrnament = new LeftOrnament(newOrnam);
-                                    Ornaments.Add(newLeftOrnament);
+                                    groupList.Add(newLeftOrnament);
                                     break;
                                 case "right":
                                     Ornament newOrname = new Ornament(textInput);
                                     RightOrnament newRightOrnament = new RightOrnament(newOrname);
-                                    Ornaments.Add(newRightOrnament);
+                                    groupList.Add(newRightOrnament);
                                     break;
                                 default:
                                     break;

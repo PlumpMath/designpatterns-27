@@ -138,22 +138,22 @@ namespace DrawingApp
 
         public override int GetPosX()
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         public override int GetPosY()
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         public override int GetSizX()
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         public override int GetSizY()
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         public override void SetPosX(int posX)
@@ -200,6 +200,38 @@ namespace DrawingApp
                 Rectangle r = new Rectangle(GetMinX(), GetMinY(), GetMaxX() - GetMinX(), GetMaxY() - GetMinY());
                 Pen selected_pen = new Pen(Color.Black, 2);
                 e.Graphics.DrawRectangle(selected_pen, r);
+            }
+        }
+
+        public override void SetPosXOffset(int posXOffset)
+        {
+            foreach (GroupComponent component in shapes)
+            {
+                component.SetPosXOffset(posXOffset);
+            }
+        }
+
+        public override void SetPosYOffset(int posYOffset)
+        {
+            foreach (GroupComponent component in shapes)
+            {
+                component.SetPosYOffset(posYOffset);
+            }
+        }
+
+        public override void SetSizXOffset(int sizXOffset)
+        {
+            foreach (GroupComponent component in shapes)
+            {
+                component.SetSizXOffset(sizXOffset);
+            }
+        }
+
+        public override void SetSizYOffset(int sizYOffset)
+        {
+            foreach (GroupComponent component in shapes)
+            {
+                component.SetSizYOffset(sizYOffset);
             }
         }
     }

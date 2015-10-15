@@ -24,30 +24,6 @@ namespace DrawingApp
         {
             return this.side;
         }
-        public virtual void drawOrnament(int posX, int posY, int sizX, int sizY, Graphics g)
-        {
-            Font mainFont = new Font("Arial", 16);
-            Brush fontColor = new SolidBrush(Color.Black);
-            SizeF stringSize = new SizeF();
-            stringSize = g.MeasureString(getText(), mainFont, 200);
-            switch (this.getSide())
-            {
-                case "top":
-                    g.DrawString(getText(), mainFont, fontColor, (posX + (sizX / 2) - (stringSize.Width / 2)), posY - (stringSize.Height / 2));
-                    break;
-                case "bottom":
-                    g.DrawString(getText(), mainFont, fontColor, (posX + (sizX / 2) - (stringSize.Width / 2)), ((posY + sizY) - (stringSize.Height / 2)));
-                    break;
-                case "left":
-                    g.DrawString(getText(), mainFont, fontColor, posX - (stringSize.Width / 2), posY + (sizY / 2) - (stringSize.Height / 2));
-                    break;
-                case "right":
-                    g.DrawString(getText(), mainFont, fontColor, (posX + sizX) - (stringSize.Width / 2), posY + (sizY / 2) - (stringSize.Height / 2));
-                    break;
-                default:
-                    break;
-            }
-        }
 
         public override void Add(GroupComponent c)
         {
@@ -61,7 +37,13 @@ namespace DrawingApp
 
         public override void Display(int depth)
         {
-            throw new NotImplementedException();
+            Console.WriteLine(new String(' ', depth) + "ornament " + getSide() + " \"" + getText() + "\"");
+
+            // Recursively display child nodes
+            foreach (GroupComponent component in components)
+            {
+                component.Display(depth);
+            }
         }
 
         public override bool ContainsMember(GroupComponent shape)
@@ -71,7 +53,11 @@ namespace DrawingApp
 
         public override void WriteToFile(System.IO.StreamWriter writer, int depth)
         {
-            throw new NotImplementedException();
+            writer.WriteLine(new String(' ', depth) + "ornament " + getSide() + " \"" + getText() + "\"");
+            foreach (GroupComponent component in components)
+            {
+                component.WriteToFile(writer, depth);
+            }
         }
 
         public override List<GroupComponent> UnGroup()
@@ -102,7 +88,10 @@ namespace DrawingApp
 
         public override void setSelected(bool selected)
         {
-            //throw new NotImplementedException();
+            foreach (GroupComponent component in components)
+            {
+                component.setSelected(selected);
+            }
         }
 
         public override int Size()
@@ -229,6 +218,42 @@ namespace DrawingApp
 
          e.Graphics.DrawString(getText(), mainFont, fontColor, GetPosX(), GetPosY());
 
+        }
+
+        public override void SetPosXOffset(int posXOffset)
+        {
+            foreach (GroupComponent component in components)
+            {
+                component.SetPosXOffset(posXOffset);
+            }
+            SetPosX(GetPosX() + posXOffset);
+        }
+
+        public override void SetPosYOffset(int posYOffset)
+        {
+            foreach (GroupComponent component in components)
+            {
+                component.SetPosYOffset(posYOffset);
+            }
+            SetPosY(GetPosY() + posYOffset);
+        }
+
+        public override void SetSizXOffset(int sizXOffset)
+        {
+            foreach (GroupComponent component in components)
+            {
+                component.SetSizXOffset(sizXOffset);
+            }
+            SetSizX(GetSizX() + sizXOffset);
+        }
+
+        public override void SetSizYOffset(int sizYOffset)
+        {
+            foreach (GroupComponent component in components)
+            {
+                component.SetSizYOffset(sizYOffset);
+            }
+            SetSizY(GetSizY() + sizYOffset);
         }
     }
 }
