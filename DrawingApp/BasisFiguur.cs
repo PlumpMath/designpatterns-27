@@ -18,7 +18,6 @@ namespace DrawingApp
         private int sizY;
         private bool selected;
         public Strategy strategy;
-        public List<OrnamentBase> Ornaments = new List<OrnamentBase>();
         
         public enum Shapes
         {
@@ -77,11 +76,6 @@ namespace DrawingApp
         }
         public override void WriteToFile(System.IO.StreamWriter writer, int depth)
         {
-            //Write every ornament to the file before the shape is written.
-            foreach(OrnamentBase orn in Ornaments)
-            {
-                writer.WriteLine(new String(' ', depth) + "ornament " + orn.getSide() + " \"" + orn.getText() + "\"");
-            }
             writer.WriteLine(new String(' ', depth) + this.name + ' ' + posX + ' ' + posY+ ' ' + sizX+ ' ' + sizY);
         }
         public override bool ContainsMember(GroupComponent shape)

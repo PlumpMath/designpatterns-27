@@ -47,10 +47,6 @@ namespace DrawingApp
             {
                 controller.AddOrnament(ornament, shapecomponent);
             }
-            public void ToggleSelect(BasisFiguur shape)
-            {
-                controller.ToggleSelect(shape);
-            }
 
             public Stack<UndoableCommand> GetCommandStack()
             {
@@ -503,65 +499,54 @@ namespace DrawingApp
         private void AddOrnamentButton_Click(object sender, EventArgs e)
         {
             List<GroupComponent> newList = this.mainWindow.GetGroups();
+            List<Tuple<GroupComponent, GroupComponent>> newOrnaments = new List<Tuple<GroupComponent, GroupComponent>>();
             Console.WriteLine(newList.Count);
             //foreach (var currentShape1 in newList)
-                for (int i = 0; i < newList.Count;i++ )
+            for (int i = 0; i < newList.Count;i++)
+            {
+                GroupComponent currentShape = newList[i];
+                if (currentShape.isSelected())
                 {
-                    GroupComponent currentShape = newList[i];
-                        if (currentShape.isSelected())
-                        {
-                            string textInput = OrnamentTextbox.Text;
-                            Font mainFont = new Font("Arial", 16);
-                            SizeF stringSize = new SizeF();
-                            Graphics g = this.CreateGraphics();
-                            stringSize = g.MeasureString(textInput, mainFont, 200);
-                            switch (OrnamentSideCombo.SelectedItem.ToString())
-                            {
-                                case "Top":
-                                    //Create a new ornament and set the text.
-                                    Ornament newOr = new Ornament(textInput);
-                                    //This ornament will be a top ornament.
-                                    TopOrnament newTopOrnament = new TopOrnament(newOr);
-                                    //Add the new ornament to the list. After which it can be drawn or saved.
-
-                                    newTopOrnament.SetPosX((int)(currentShape.GetMinX() + ((currentShape.GetMaxX() - currentShape.GetMinX()) / 2) - (stringSize.Width / 2)));
-                                    newTopOrnament.SetPosY((int)(currentShape.GetMinY() - (stringSize.Height / 2)));
-
-                                    mainWindow.AddOrnament(newTopOrnament, currentShape);
-                                    break;
-                                case "Bottom":
-                                    Ornament newOrna = new Ornament(textInput);
-                                    ButtomOrnament newBottomOrnament = new ButtomOrnament(newOrna);
-
-                                    newBottomOrnament.SetPosX((int)(currentShape.GetMinX() + ((currentShape.GetMaxX() - currentShape.GetMinX()) / 2) - (stringSize.Width / 2)));
-                                    newBottomOrnament.SetPosY((int)((currentShape.GetMinY() + (currentShape.GetMaxY() - currentShape.GetMinY())) - (stringSize.Height / 2)));
-
-                                    mainWindow.AddOrnament(newBottomOrnament, currentShape);
-                                    break;
-                                case "Left":
-                                    Ornament newOrnam = new Ornament(textInput);
-                                    LeftOrnament newLeftOrnament = new LeftOrnament(newOrnam);
-
-                                    newLeftOrnament.SetPosX((int)(currentShape.GetMinX() - (stringSize.Width / 2)));
-                                    newLeftOrnament.SetPosY((int)(currentShape.GetMinY() + ((currentShape.GetMaxY() - currentShape.GetMinY()) / 2) - (stringSize.Height / 2)));
-
-                                    mainWindow.AddOrnament(newLeftOrnament, currentShape);
-                                    break;
-                                case "Right":
-                                    Ornament newOrname = new Ornament(textInput);
-                                    RightOrnament newRightOrnament = new RightOrnament(newOrname);
-
-                                    newRightOrnament.SetPosX((int)((currentShape.GetMinX() + (currentShape.GetMaxX() - currentShape.GetMinX()) - (stringSize.Width / 2))));
-                                    newRightOrnament.SetPosY((int)(currentShape.GetMinY() + ((currentShape.GetMaxY() - currentShape.GetMinY()) / 2) - (stringSize.Height / 2)));
-
-                                    mainWindow.AddOrnament(newRightOrnament, currentShape);
-                                    break;
-                                default:
-                                    break;
-                            }
+                    string textInput = OrnamentTextbox.Text;
+                    Font mainFont = new Font("Arial", 16);
+                    SizeF stringSize = new SizeF();
+                    Graphics g = this.CreateGraphics();
+                    stringSize = g.MeasureString(textInput, mainFont, 200);
+                    switch (OrnamentSideCombo.SelectedItem.ToString())
+                    {
+                        case "Top":
+                            //Create a new ornament and set the text.
+                            Ornament newOr = new Ornament(textInput);
+                            //This ornament will be a top ornament.
+                            TopOrnament newTopOrnament = new TopOrnament(newOr);
+                            //Add the new ornament to the list. After which it can be drawn or saved.
+                            newOrnaments.Add(new Tuple<GroupComponent, GroupComponent>(newTopOrnament, currentShape));
+                            break;
+                        case "Bottom":
+                            Ornament newOrna = new Ornament(textInput);
+                            ButtomOrnament newBottomOrnament = new ButtomOrnament(newOrna);
+                            newOrnaments.Add(new Tuple<GroupComponent, GroupComponent>(newBottomOrnament, currentShape));
+                            break;
+                        case "Left":
+                            Ornament newOrnam = new Ornament(textInput);
+                            LeftOrnament newLeftOrnament = new LeftOrnament(newOrnam);
+                            newOrnaments.Add(new Tuple<GroupComponent, GroupComponent>(newLeftOrnament, currentShape));
+                            break;
+                        case "Right":
+                            Ornament newOrname = new Ornament(textInput);
+                            RightOrnament newRightOrnament = new RightOrnament(newOrname);
+                            newOrnaments.Add(new Tuple<GroupComponent, GroupComponent>(newRightOrnament, currentShape));
+                            break;
+                        default:
+                            break;
                     }
                 }
-            this.Refresh();
+            }
+            for (int i = 0; i < newOrnaments.Count; i++)
+            {
+                mainWindow.AddOrnament(newOrnaments[i].Item1, newOrnaments[i].Item2);
+            }
+                this.Refresh();
         }
     }
 }

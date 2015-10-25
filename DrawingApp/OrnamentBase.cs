@@ -11,10 +11,6 @@ namespace DrawingApp
     {
         protected string text;
         protected string side;
-        private int posX;
-        private int posY;
-        private int sizX;
-        private int sizY;
         private List<GroupComponent> components = new List<GroupComponent>();
         public virtual string getText()
         {
@@ -62,7 +58,7 @@ namespace DrawingApp
 
         public override List<GroupComponent> UnGroup()
         {
-            throw new NotImplementedException();
+            return components;
         }
 
         public override void ToggleSelected()
@@ -153,42 +149,42 @@ namespace DrawingApp
 
         public override int GetPosX()
         {
-            return this.posX;
+            return GetMinX();
         }
 
         public override int GetPosY()
         {
-            return this.posY;
+            return GetMinY();
         }
 
         public override int GetSizX()
         {
-            return this.sizX;
+            return GetMaxX();
         }
 
         public override int GetSizY()
         {
-            return this.sizY;
+            return GetMaxY();
         }
 
         public override void SetPosX(int posX)
         {
-            this.posX = posX;
+            //An ornament doesn't need to be moved. It's drawn relative to it's components.
         }
 
         public override void SetPosY(int posY)
         {
-            this.posY = posY;
+            
         }
 
         public override void SetSizX(int sizX)
         {
-            this.sizX = sizX;
+            //Resizing is also not nessesary for ornaments. The text size stays the same.
         }
 
         public override void SetSizY(int sizY)
         {
-            this.sizY = sizY;
+            
         }
 
         public override Color getBackColor()
@@ -210,13 +206,45 @@ namespace DrawingApp
         {
             Font mainFont = new Font("Arial", 16);
             Brush fontColor = new SolidBrush(Color.Black);
+            SizeF stringSize = new SizeF();
+            stringSize = e.Graphics.MeasureString(getText(), mainFont);
 
             foreach (GroupComponent component in components)
             {
                 component.Draw(e);
             }
+            int x = 0;
+            int y = 0;
+            switch (getSide())
+            {
+                case "top":
 
-         e.Graphics.DrawString(getText(), mainFont, fontColor, GetPosX(), GetPosY());
+                    x = this.GetMaxX();
+                    y = (int)(GetMinY() - (stringSize.Height / 2));
+                    break;
+                case "bottom":
+
+                    x = (int)(GetMinX() + ((GetMaxX() - GetMinX()) / 2) - (stringSize.Width / 2));
+                    y = (int)((GetMinY() + (GetMaxY() - GetMinY())) - (stringSize.Height / 2));
+
+                    break;
+                case "left":
+
+                    x = (int)(GetMinX() - (stringSize.Width / 2));
+                    y = (int)(GetMinY() + ((GetMaxY() - GetMinY()) / 2) - (stringSize.Height / 2));
+
+                    break;
+                case "right":
+
+                    x = this.GetMaxX();
+                    y = (int)(this.GetMinY() + ((this.GetMaxY() - this.GetMinY()) / 2) - (stringSize.Height / 2));
+
+                    break;
+                default:
+                    break;
+            }
+
+            e.Graphics.DrawString(getText(), mainFont, fontColor, x, y);
 
         }
 

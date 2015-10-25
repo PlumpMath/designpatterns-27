@@ -110,7 +110,7 @@ namespace DrawingApp
             openFielDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             openFielDialog.RestoreDirectory = true;
             List<GroupComponent> elements = new List<GroupComponent>();
-            List<Tuple<int, GroupComposite>> proceedingSpaces = new List<Tuple<int, GroupComposite>>();
+            List<Tuple<int, GroupComponent>> proceedingSpaces = new List<Tuple<int, GroupComponent>>();
             if (openFielDialog.ShowDialog() == DialogResult.OK)
             {
                 using (StreamReader reader = new StreamReader(openFielDialog.OpenFile()))
@@ -131,23 +131,22 @@ namespace DrawingApp
                             newGroup.setName("group " + newline[counter + 1]);
                             //Increase the groupCounter or else there will be multiple groups called "group 0" for example.
                             groupCounter++;
-                            proceedingSpaces.Insert(0, new Tuple<int, GroupComposite>(counter, newGroup));
-                            if (counter > 0)
+                            
+                            foreach (Tuple<int, GroupComponent> currentGroup in proceedingSpaces)
                             {
-                                foreach (Tuple<int, GroupComposite> currentGroup in proceedingSpaces)
+                                if (currentGroup.Item1 < counter || currentGroup.Item2 is OrnamentDecorator)
                                 {
-                                    if (currentGroup.Item1 < counter)
-                                    {
-                                        currentGroup.Item2.Add(newGroup);
-                                        break;
-                                    }
+                                    currentGroup.Item2.Add(newGroup);
+                                    break;
+                                }
+                                else
+                                {
+                                    elements.Add(newGroup);
+                                    break;
                                 }
                             }
-                            else
-                            {
-                                elements.Add(newGroup);
-                            }
 
+                            proceedingSpaces.Insert(0, new Tuple<int, GroupComponent>(counter, newGroup));
                         }
                         else if (newline[counter] == "rectangle" || newline[counter] == "ellipse")
                         {
@@ -166,16 +165,15 @@ namespace DrawingApp
                                 newShape.setPosSiz(Convert.ToInt32(newline[counter + 1]), Convert.ToInt32(newline[counter + 2]), Convert.ToInt32(newline[counter + 3]), Convert.ToInt32(newline[counter + 4]));
                                 newShape.setBackColor(randomColor);
                                 newShape.setSelected(false);
-                                //Shape newShape = new Shape(newline[counter], randomColor, , false);
-                                groupList.Add(newShape);
+
                                 //If there are spaces before the shape it means the shape in one or more groups.
                                 if (counter > 0)
                                 {
                                     //Find the group that has been last added to the list, and less spaces in front of it.
                                     //Which means it it higher in the hierarchy.
-                                    foreach (Tuple<int, GroupComposite> currentGroup in proceedingSpaces)
+                                    foreach (Tuple<int, GroupComponent> currentGroup in proceedingSpaces)
                                     {
-                                        if (currentGroup.Item1 < counter)
+                                        if (currentGroup.Item1 < counter || currentGroup.Item2 is OrnamentDecorator)
                                         {
                                             currentGroup.Item2.Add(newShape);
                                             //Once the group is found the search stops. The shape only needs to be added to one group.
@@ -192,39 +190,53 @@ namespace DrawingApp
                         else if (newline[counter] == "ornament")
                         {
                             string textInput = newline[counter + 2];
-                            Console.WriteLine(textInput);
                             //Remove the extra " at the beginning and end of the string.
                             textInput.TrimEnd();
                             textInput = textInput.TrimEnd(new char[] { '\"'});
                             textInput = textInput.TrimStart(new char[] { '\"' });
+                            //Create a new ornament and set the text.
+                            Ornament newOrnamentBase = new Ornament(textInput);
+                            GroupComponent newOrnament = null;
+
                             switch (newline[counter + 1])
                             {
                                 case "top":
-                                    //Create a new ornament and set the text.
-                                    Ornament newOr = new Ornament(textInput);
                                     //This ornament will be a top ornament.
-                                    TopOrnament newTopOrnament = new TopOrnament(newOr);
-                                    //Add the new ornament to the list. After which it can be added to the next shape or group.
-                                    groupList.Add(newTopOrnament);
+                                    newOrnament = new TopOrnament(newOrnamentBase);
                                     break;
                                 case "bottom":
-                                    Ornament newOrna = new Ornament(textInput);
-                                    ButtomOrnament newBottomOrnament = new ButtomOrnament(newOrna);
-                                    groupList.Add(newBottomOrnament);
+                                    newOrnament = new ButtomOrnament(newOrnamentBase);
                                     break;
                                 case "left":
-                                    Ornament newOrnam = new Ornament(textInput);
-                                    LeftOrnament newLeftOrnament = new LeftOrnament(newOrnam);
-                                    groupList.Add(newLeftOrnament);
+                                    newOrnament = new LeftOrnament(newOrnamentBase);
                                     break;
                                 case "right":
-                                    Ornament newOrname = new Ornament(textInput);
-                                    RightOrnament newRightOrnament = new RightOrnament(newOrname);
-                                    groupList.Add(newRightOrnament);
+                                    newOrnament = new RightOrnament(newOrnamentBase);
                                     break;
                                 default:
                                     break;
                             }
+                            
+                            //If there are spaces before the shape it means the shape in one or more groups.
+                            if (counter > 0 && newOrnament != null)
+                            {
+                                //Find the group that has been last added to the list, and less spaces in front of it.
+                                //Which means it it higher in the hierarchy.
+                                foreach (Tuple<int, GroupComponent> currentGroup in proceedingSpaces)
+                                {
+                                    if (currentGroup.Item1 < counter || currentGroup.Item2 is Ornament)
+                                    {
+                                        currentGroup.Item2.Add(newOrnament);
+                                        //Once the group is found the search stops. The shape only needs to be added to one group.
+                                        break;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                elements.Add(newOrnament);
+                            }
+                            proceedingSpaces.Insert(0, new Tuple<int, GroupComponent>(counter, newOrnament));
                         }
                     }
                 }
